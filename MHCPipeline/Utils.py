@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def transformMHClist(filename):
+def transformmhclist(filename):
     df = pd.read_table(filename, delim_whitespace=True, header=None)
     listmhc = list(df.iloc[:, 1])
     listlength = list(df.iloc[:, 2])
