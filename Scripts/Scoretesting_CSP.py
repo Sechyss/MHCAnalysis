@@ -55,7 +55,7 @@ if __name__ == '__main__':
                         continue
 
                 print(
-                    'Peptide between ' + str(begining_pep) + ' and ' + str(end_pep) + ' contains ' + str(counter) + ' hits')
+                    'Peptide between ' + str(begining_pep) + ' and ' + str(end_pep) + ' contains ' + str(counter) + 'hits')
                 with open('Output.tsv', 'a') as f:
                     f.write('Peptide' + "\t" + str(begining_pep) + "\t" + str(end_pep) + "\t" + str(counter) + "\n")
 
