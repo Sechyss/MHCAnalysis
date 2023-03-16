@@ -140,7 +140,7 @@ def main():
                 counter += 1
             else:
                 counter += 1
-    with open(args.output+'_dict.pickle', 'wb') as f2:
+    with open(args.output + '_dict.pickle', 'wb') as f2:
         pickle.dump(collector_dict, f2)  # Save the dictionary to a pickle file for future use
 
 
