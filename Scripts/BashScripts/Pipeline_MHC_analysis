@@ -1,5 +1,3 @@
-# usr/bin/bash
-
 python /PATH/MHC_prep_list.py [-f table.xlsx] [-l list.txt] [-p POPULATION]
 
 cd /PATH/mhc_i
