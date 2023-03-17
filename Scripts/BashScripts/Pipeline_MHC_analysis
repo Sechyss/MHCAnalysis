@@ -1,0 +1,16 @@
+# usr/bin/bash
+
+python /PATH/MHC_prep_list.py [-f table.xlsx] [-l list.txt] [-p POPULATION]
+
+cd /PATH/mhc_i
+
+python ./src/predict_binding.py [method] [outputfrompreviouspythoncode] [sequence.faa] > [outputfile.txt]
+
+python /PATH/VCF_MHC_Analysis.py [-v file.vcf.gz] [-m file.txt] [-s FASTA] [-o file.pdf]
+
+python /PATH/CASP_peptide_SNP_kmer_analysis.py [-v file.csv] [-g file.fasta] [-s START] [-e END] [-o file.fasta]
+
+python ./src/predict_binding.py [method] [outputfrompreviouspythoncode] [kmerseqs.faa] > [kmeroutputfile.txt]
+
+python /PATH/CSP_SummaryTable.py [-t table.txt] [-d dict.pickle] [-p NEWDICT] [-o file.xlsx]
+

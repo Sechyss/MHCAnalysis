@@ -1,11 +1,10 @@
 import pandas as pd
 import pickle
 
-
 mhc_kenya_run = pd.read_table('/Users/u2176312/OneDrive - University of '
-                              'Warwick/CSP/Kmer_CSP_predictionbinding_region_283-307.txt')
+                              'Warwick/CSP/CSP_SNP_region/Kmer_CSP_predictionbinding_region_308-342.txt')
 temp_file = open('/Users/u2176312/OneDrive - University of '
-                 'Warwick/CSP/Kmer_CSP_region_283-307_aa.fasta_dict.pickle', 'rb')
+                 'Warwick/CSP/CSP_SNP_region/Kmer_CSP_region_283-307_aa.fasta_dict.pickle', 'rb')
 mhc_kenya_run_dict = pickle.load(temp_file)
 
 mhc_kenya_run_successful = mhc_kenya_run[mhc_kenya_run['rank'] <= 1]
@@ -40,7 +39,6 @@ final_df = pd.DataFrame.from_dict(final_dict, orient='index', columns=['Variants
 for allele in successful_alleles:
     final_df[allele] = 0
 
-
 for key1 in dict_ids.keys():
     values = dict_ids[key1]
     for value in values:
@@ -51,17 +49,16 @@ for key1 in dict_ids.keys():
         else:
             continue
 
-
 dict_tosave = {}
 for allele in successful_alleles:
     filtered_df = mhc_kenya_run_successful[mhc_kenya_run_successful['allele'] == allele]
     redefined_df = filtered_df.sort_values(by=['seq_num'])
     for index, row in redefined_df.iterrows():
         if row['allele'] not in dict_tosave.keys():
-            dict_tosave.update({row['allele']: [row['seq_num']]})
+            dict_tosave.update({row['allele']: [int(row['seq_num']) - 1]})
 
         else:
-            dict_tosave[row['allele']].append(row['seq_num'])
+            dict_tosave[row['allele']].append(int(row['seq_num']) - 1)
 
 sheet2 = pd.DataFrame.from_dict(dict_tosave, orient='index')
 sheet2 = sheet2.transpose()
