@@ -24,7 +24,7 @@ def main():
     parser.add_argument("-g", "--fasta", metavar='file.fasta', dest="genome", help="Genome in fasta", type=str)
     parser.add_argument("-s", "--start", dest="start", help="MHC region start", type=int)
     parser.add_argument("-e", "--end", dest="end", help="MHC region end", type=int)
-    parser.add_argument("-o", "--output", metavar='file.pdf', dest="output", help="Output file to save", type=str)
+    parser.add_argument("-o", "--output", metavar='file.fasta', dest="output", help="Output file to save", type=str)
 
     args = parser.parse_args()
 

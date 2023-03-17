@@ -16,6 +16,7 @@ the SNPs in fasta file.
 parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqtable", help="Allele frequency table",
                     type=str)
 parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
+parser.add_argument("-p", "--population", dest="population", help="String Population (all pops)", type=str)
 
 
 args = parser.parse_args()
@@ -23,7 +24,7 @@ args = parser.parse_args()
 # =============================================================================
 
 df = pd.read_excel(args.allelefreqtable, sheet_name='Sheet1', index_col=0)
-relative_allefreq = df[df['Population'] == 'Kenya']
+relative_allefreq = df[df['Population'].str.contains(args.population)]
 
 list_alleles = set(relative_allefreq['Allele'])
 

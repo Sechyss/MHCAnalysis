@@ -98,10 +98,10 @@ for allele in successful_alleles:
     redefined_df = filtered_df.sort_values(by=['seq_num'])
     for index, row in redefined_df.iterrows():
         if row['allele'] not in dict_tosave.keys():
-            dict_tosave.update({row['allele']: [row['seq_num']]})
+            dict_tosave.update({row['allele']: [int(row['seq_num'])-1]})
 
         else:
-            dict_tosave[row['allele']].append(row['seq_num'])
+            dict_tosave[row['allele']].append(int(row['seq_num'])-1)
 
 sheet2 = pd.DataFrame.from_dict(dict_tosave, orient='index')
 sheet2 = sheet2.transpose()
