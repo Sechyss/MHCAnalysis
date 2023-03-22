@@ -42,7 +42,7 @@ finaldf = mhc_predict_df[mhc_predict_df[1].isin(finalist_common)]
 
 # This next part of the code can be removed to select a specific kmer size
 
-finaldf = finaldf[finaldf[2] <= 12]  # <-- Change this line to select a specific kmer size
+finaldf = finaldf[finaldf[2] <= 11]  # <-- Change this line to select a specific kmer size
 
 
 allele = list(finaldf[1])

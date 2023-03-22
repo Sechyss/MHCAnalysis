@@ -5,7 +5,7 @@ This is a set of scripts to make them publicly available for everyone to repeat 
 2. Rest of the scripts are executed in the command line either as they are or 
 by running the flags specified in the help command
 
-# Order of the scripts to be executed
+## Order of the scripts to be executed
 
 python /PATH/MHC_prep_list.py [-f table.xlsx] [-l list.txt] [-p POPULATION]
 
