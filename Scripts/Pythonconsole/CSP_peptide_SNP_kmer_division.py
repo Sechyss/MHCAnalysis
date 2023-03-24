@@ -89,9 +89,16 @@ while end_point <= len(reference_peptide):  # Iterate through the region of inte
 with open('/Users/u2176312/OneDrive - University of Warwick/'
           'CSP/test.fasta', 'a') as f1:
     for key in tqdm(collector_ids.keys()):
-        for sequence, header in zip(collector_Seqs[key], collector_ids[key]):
-            nt_sequence = Seq(sequence)
-            fastaheader = header
+        if type(collector_Seqs[key]) != list:
+            nt_sequence = Seq(collector_Seqs[key])
+            fastaheader = collector_ids[key]
             if '*' not in nt_sequence:
                 seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
                 SeqIO.write(seq_record, f1, 'fasta')
+        else:
+            for sequence, header in zip(collector_Seqs[key], collector_ids[key]):
+                nt_sequence = Seq(sequence)
+                fastaheader = header
+                if '*' not in nt_sequence:
+                    seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
+                    SeqIO.write(seq_record, f1, 'fasta')

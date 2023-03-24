@@ -145,14 +145,22 @@ def main():
     with open('/Users/u2176312/OneDrive - University of Warwick/'
               'CSP/test.fasta', 'a') as f1:
         for key in tqdm(collector_ids.keys()):
-            for sequence, header in zip(collector_Seqs[key], collector_ids[key]):
-                nt_sequence = Seq(sequence)
-                fastaheader = header
+            if type(collector_Seqs[key]) != list:
+                nt_sequence = Seq(collector_Seqs[key])
+                fastaheader = collector_ids[key]
                 if '*' not in nt_sequence:
                     seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
                     SeqIO.write(seq_record, f1, 'fasta')
+            else:
+                for sequence, header in zip(collector_Seqs[key], collector_ids[key]):
+                    nt_sequence = Seq(sequence)
+                    fastaheader = header
+                    if '*' not in nt_sequence:
+                        seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
+                        SeqIO.write(seq_record, f1, 'fasta')
+
     with open(args.output + '_dict.pickle', 'wb') as f2:
-        pickle.dump(collector_Seqs, f2)  # Save the dictionary to a pickle file for future use
+        pickle.dump(collector_ids, f2)  # Save the dictionary to a pickle file for future use
 
 
 if __name__ == '__main__':
