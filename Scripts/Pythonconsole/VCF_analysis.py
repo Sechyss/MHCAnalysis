@@ -63,7 +63,7 @@ df = pd.DataFrame(data=data, columns=['Chrom', 'Pos', 'Start', 'Stop', 'ID', 'Re
 # %% Addition of the MHC table to compare SNPs and MHC binding sites
 
 df_MHC = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
-                       'CSP/CSP_netmhcpan_el_fullprotein_finland.txt')
+                       'CSP/CSP_netmhcpan_el_fullprotein_PapuaNewGuinea.txt')
 df_MHC_ranked = df_MHC[df_MHC['rank'] <= 1]
 df_MHC_ranked = df_MHC_ranked.sort_values(by=['start'])
 csp_nucleotide = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/'
@@ -176,6 +176,4 @@ for sequence in csp_nucleotide:
     ax1.set_title('MHC binding region', loc='right', y=0.7, weight='bold')
     ax2.set_title('SNPs density', loc='right', y=0.55, weight='bold')
 
-plt.savefig('/Users/u2176312/OneDrive - University of Warwick/'
-            'CSP/CSP_SNP_region/SNPs_MHC_Finland_CSF_protein_pf3d7_netmhcpan_el.pdf', dpi=300)
 plt.show()

@@ -48,3 +48,5 @@ finaldf = finaldf[finaldf[2] <= 11]  # <-- Change this line to select a specific
 allele = list(finaldf[1])
 length = list(finaldf[2])
 print(','.join(allele), ','.join(map(str, length)))
+
+print(allele)

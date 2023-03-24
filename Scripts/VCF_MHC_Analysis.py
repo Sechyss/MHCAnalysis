@@ -28,8 +28,6 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
 Analysis of MHC prediction results in combination with SNPs in a particular protein sequence.
 ------------------------------------------
 '''))
-# Parse command line arguments
-# -i FILE -t TASK -h HELP -o OUTPUT -th Threshold
 
 parser.add_argument("-v", "--vcf", metavar='file.vcf.gz', dest="vcf", help="VCF file", type=str)
 parser.add_argument("-m", "--mhc", metavar='file.txt', dest="mhc", help="MHC file", type=str)
@@ -57,6 +55,7 @@ def main():
     # Fetch region .  Note that the coordinates
     # in the API call are zero-based and describe half-open intervals.
     for record in vcf_reader.fetch('Pf3D7_03_v3', 221323, 222516):
+        # Extract the information from the record and add it to the list of features for this region
         if 'SNPEFF_GENE_NAME' in record.info.keys() and record.info['SNPEFF_GENE_NAME'] == 'CSP':
             if record.rlen == 1:
                 SNP_type = 'SNP'
@@ -74,25 +73,27 @@ def main():
                  record.info['SNPEFF_AMINO_ACID_CHANGE'],
                  codon_change, record.info['SNPEFF_EFFECT'],
                  record.info['SNPEFF_IMPACT']])
-
+    # Group the regions into a single DataFrame to create a CSV file if necessary, this can be added later
     df = pd.DataFrame(data=data, columns=['Chrom', 'Pos', 'Start', 'Stop', 'ID', 'Ref', 'Alt', 'Type',
                                           'Qual', 'GQ',
                                           'Allele_frequency', 'Read_Depth', 'Amino_acid_change', 'Codon_change',
                                           'Effect',
                                           'Impact'])
 
-    # Addition of the MHC table to compare SNPs and MHC binding sites
+    # Addition of the MHC table from predictionbinding.py to compare SNPs and MHC binding sites
 
     df_MHC = pd.read_table(str(args.mhc), sep='\t')
     df_MHC_ranked = df_MHC[df_MHC['rank'] <= 1]
     df_MHC_ranked = df_MHC_ranked.sort_values(by=['start'])
 
-    # Run this is you want the regions of binding with HLAs
+    # Grouping of the MHC binding regions regardless of HLA that binds
     data_u = [[0, 0]]
     for index, row in df_MHC_ranked.iterrows():
+        # Extract the coordinates of the SNPs and the potential points in between
         coordinates = [df_MHC.loc[index]['start'], df_MHC.loc[index]['end']]
         test_coordinates = range(df_MHC.loc[index]['start'], df_MHC.loc[index]['end'])
 
+        # Counter is used to calculate if regions need to be further compared
         counter = 0
         temporary_addition_min = []
         temporary_addition_max = []
@@ -113,6 +114,8 @@ def main():
         else:
             data_u[index] = [min(temporary_addition_min), max(temporary_addition_max)]
     data_u.pop(0)
+    print('The regions of the protein that contain MHC binding regions are grouped as follows:')
+    print(', '.join(map(str, data_u)))
     # Use the data to create the figure of interest
     csp_nucleotide = SeqIO.parse(str(args.fasta), 'fasta')
 
@@ -194,6 +197,7 @@ def main():
         legend.get_frame().set_alpha(None)
         ax1.set_title('MHC binding region', loc='right', y=0.7, weight='bold')
         ax2.set_title('SNPs density', loc='right', y=0.55, weight='bold')
+    print('Saving figure to file')
     plt.savefig(str(args.output), dpi=300)
     plt.show()
 

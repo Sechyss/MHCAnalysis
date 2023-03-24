@@ -105,8 +105,12 @@ def main():
     indexed_sequence = pd.Series(reference_peptide)
 
     collector_object = []
-    collector_dict = {}
+    collector_Seqs = {}
+
+    collector_ids = {}
+
     while end_point <= len(reference_peptide):  # Iterate through the region of interest
+
         kmer = indexed_sequence[starting_point: end_point]  # Get the indexed kmer
         SNP_hits = list(set(kmer.index) & set(relative_aa_position))  # Get the SNP hits in this kmer region
         SNP_hits.sort()  # Sort the SNP hits
@@ -115,33 +119,40 @@ def main():
                            SNP_hits}  # Get the dictionary of matching regions
             new_sequence = generate_combinations(kmer.values, dict_sliced)  # Generate the combination of sequences
             collector_object.extend(new_sequence)  # Add the new sequences to the list
-            collector_dict.update(
+            collector_Seqs.update(
                 {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
-                     new_sequence})
+                 new_sequence})
+            ids_range = ['Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point)
+                         + '_' + str(x) for x in range(len(new_sequence))]
+            collector_ids.update(
+                {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
+                 ids_range})
             starting_point += 1
             end_point += 1
+
         else:
             collector_object.append("".join(kmer))  # Add the reference sequence to the list
-            collector_dict.update(
+            collector_Seqs.update(
                 {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
-                     "".join(kmer)})
+                 "".join(kmer)})
+            collector_ids.update(
+                {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
+                 'Kmer' + str(mhc_region_start + starting_point) + '-' + str(
+                         mhc_region_start + end_point) + '_' + str(0)})
             starting_point += 1
             end_point += 1
 
-    counter = 0
-
-    with open(args.output, 'a') as f1:  # Open file to write the Fasta sequences
-        for sequence in tqdm(collector_object):
-            nt_sequence = Seq(sequence)
-
-            if '*' not in nt_sequence:  # Remove any incomplete sequence due to stop codons
-                seq_record = SeqRecord(nt_sequence, id='Pf3D7_csp' + str(counter), description='')
-                SeqIO.write(seq_record, f1, 'fasta')
-                counter += 1
-            else:
-                counter += 1
+    with open('/Users/u2176312/OneDrive - University of Warwick/'
+              'CSP/test.fasta', 'a') as f1:
+        for key in tqdm(collector_ids.keys()):
+            for sequence, header in zip(collector_Seqs[key], collector_ids[key]):
+                nt_sequence = Seq(sequence)
+                fastaheader = header
+                if '*' not in nt_sequence:
+                    seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
+                    SeqIO.write(seq_record, f1, 'fasta')
     with open(args.output + '_dict.pickle', 'wb') as f2:
-        pickle.dump(collector_dict, f2)  # Save the dictionary to a pickle file for future use
+        pickle.dump(collector_Seqs, f2)  # Save the dictionary to a pickle file for future use
 
 
 if __name__ == '__main__':

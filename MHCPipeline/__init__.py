@@ -1,1 +1,1 @@
-from .Utils import transformMHClist, generate_combinations
+from .Utils import generate_combinations, transformmhclist
