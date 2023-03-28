@@ -2,9 +2,10 @@ import pandas as pd
 import pickle
 
 mhc_kenya_run = pd.read_table('/Users/u2176312/OneDrive - University of '
-                              'Warwick/CSP/CSP_SNP_region/Kmer_CSP_predictionbinding_region_308-342.txt')
+                              'Warwick/CSP/CSP_SNP_region/Kmer_CSP_region_283-302_predictbind_netmhcpan_el_Finland.txt')
 temp_file = open('/Users/u2176312/OneDrive - University of '
-                 'Warwick/CSP/CSP_SNP_region/Kmer_CSP_region_283-307_aa.fasta_dict.pickle', 'rb')
+                 'Warwick/CSP/CSP_SNP_region/'
+                 'Kmer_CSP_region_283-302_aa_netmhcpan_el_Finland.fasta_dict.pickle', 'rb')
 mhc_kenya_run_dict = pickle.load(temp_file)
 
 mhc_kenya_run_successful = mhc_kenya_run[mhc_kenya_run['rank'] <= 1]

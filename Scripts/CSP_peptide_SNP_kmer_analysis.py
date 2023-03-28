@@ -142,8 +142,7 @@ def main():
             starting_point += 1
             end_point += 1
 
-    with open('/Users/u2176312/OneDrive - University of Warwick/'
-              'CSP/test.fasta', 'a') as f1:
+    with open(args.output, 'a') as f1:
         for key in tqdm(collector_ids.keys()):
             if type(collector_Seqs[key]) != list:
                 nt_sequence = Seq(collector_Seqs[key])
