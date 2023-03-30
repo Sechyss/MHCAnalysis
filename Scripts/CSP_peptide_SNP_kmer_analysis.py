@@ -145,12 +145,12 @@ def main():
     with open(args.output, 'a') as f1:
         for key in tqdm(collector_ids.keys()):
             if type(collector_Seqs[key]) != list:
-                nt_sequence = Seq(collector_Seqs[key])
-                fastaheader = collector_ids[key]
-                if '*' not in nt_sequence:
+                nt_sequence = Seq(collector_Seqs[key])  # Create the Seq object to write into the Fasta file
+                fastaheader = collector_ids[key]  # Get the header from the dictionary
+                if '*' not in nt_sequence:  # Remove sequences with Stop codons mid-Kmer
                     seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
                     SeqIO.write(seq_record, f1, 'fasta')
-            else:
+            else:  # This statement affect those Kmers with more than one variant
                 for sequence, header in zip(collector_Seqs[key], collector_ids[key]):
                     nt_sequence = Seq(sequence)
                     fastaheader = header

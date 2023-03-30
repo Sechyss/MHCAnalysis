@@ -1,6 +1,8 @@
 import pandas as pd
 import pickle
 
+# Import of data and filtering based on rank
+
 mhc_kenya_run = pd.read_table('/Users/u2176312/OneDrive - University of '
                               'Warwick/CSP/CSP_SNP_region/Kmer_CSP_region_283-302_predictbind_netmhcpan_el_Finland.txt')
 temp_file = open('/Users/u2176312/OneDrive - University of '

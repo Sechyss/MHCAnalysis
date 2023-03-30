@@ -38,16 +38,16 @@ args = parser.parse_args()
 # =============================================================================
 
 # Upload the information from table and the dictionary
-mhc_kenya_run = pd.read_table(args.mhctable)
+mhc_run = pd.read_table(args.mhctable)
 temp_file = open(args.dictionary, 'rb')
-mhc_kenya_run_dict = pickle.load(temp_file)
+mhc_run_dict = pickle.load(temp_file)
 
 # Filter results to only those with a binding site below 1 and sort them by allele id
-mhc_kenya_run_successful = mhc_kenya_run[mhc_kenya_run['rank'] <= 1]
-mhc_kenya_run_successful = mhc_kenya_run_successful.sort_values(by=['allele'])
+mhc_run_successful = mhc_run[mhc_run['rank'] <= 1]
+mhc_run_successful = mhc_run_successful.sort_values(by=['allele'])
 
 # Extract the list of alleles
-successful_alleles = list(set(mhc_kenya_run_successful['allele']))
+successful_alleles = list(set(mhc_run_successful['allele']))
 successful_alleles.sort()
 
 # Creation of constants to be used in the script
@@ -56,8 +56,8 @@ starting_id = 0
 final_dict = {}
 
 # Association of Kmer with the sequences ids
-for key in mhc_kenya_run_dict.keys():
-    number_of_sequences = len(mhc_kenya_run_dict[key])
+for key in mhc_run_dict.keys():
+    number_of_sequences = len(mhc_run_dict[key])
     dict_ids.update({key: list(range(starting_id, starting_id + number_of_sequences))})
     starting_id = starting_id + number_of_sequences
     final_dict.update({key: number_of_sequences})
@@ -65,7 +65,7 @@ for key in mhc_kenya_run_dict.keys():
 temp_dict = {}
 # Link between Sequences and alleles that bound successfully
 for allele in successful_alleles:
-    filtered_df = mhc_kenya_run_successful[mhc_kenya_run_successful['allele'] == allele]
+    filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]
     redefined_df = filtered_df.sort_values(by=['seq_num'])
     for index, row in redefined_df.iterrows():
         if row['seq_num'] not in temp_dict.keys():
@@ -94,7 +94,7 @@ for key1 in dict_ids.keys():
 # Creation of dictionary to save the list of alleles and the sequence ids they bound to
 dict_tosave = {}
 for allele in successful_alleles:
-    filtered_df = mhc_kenya_run_successful[mhc_kenya_run_successful['allele'] == allele]
+    filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]
     redefined_df = filtered_df.sort_values(by=['seq_num'])
     for index, row in redefined_df.iterrows():
         if row['allele'] not in dict_tosave.keys():
