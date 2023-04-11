@@ -17,8 +17,6 @@ def main():
     Creation of all potential sequences for CSP based on SNPs.
     ------------------------------------------
     '''))
-    # Parse command line arguments
-    # -v vcftable -g Malariagenome -h HELP -o OUTPUT -r rangeMHC
 
     parser.add_argument("-v", "--vcf", metavar='file.csv', dest="vcftable", help="VCF table", type=str)
     parser.add_argument("-g", "--fasta", metavar='file.fasta', dest="genome", help="Genome in fasta", type=str)

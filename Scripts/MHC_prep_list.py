@@ -30,12 +30,15 @@ list_alleles = set(relative_allefreq['Allele'])
 
 mhc_predict_df = pd.read_table(args.listhla, header=None, sep='\t')
 
+# Replace the empty spaces in the list
 mhc_predict_df[1] = mhc_predict_df[1].apply(lambda x: str(x).replace(' ', ''))
 
+# Replace part of the strings to see if they match with the other lists
 list_smm = list(mhc_predict_df[1])
 temp_smm = [x.replace('HLA-', '').replace(' ', '') for x in list_smm]
 common_mhc = list(list_alleles & set(temp_smm))
 
+# Regain the HLA- part of the string to print correct output
 finalist_common = ['HLA-' + str(x) for x in common_mhc]
 
 finaldf = mhc_predict_df[mhc_predict_df[1].isin(finalist_common)]
