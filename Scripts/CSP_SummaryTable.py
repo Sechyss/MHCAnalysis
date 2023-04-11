@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 
-""" This python script produces a figure that summarizes the amount of SNPs in a particular protein
-sequence into a single plot.
-
-It is important to make sure that all the packages are downloaded before running this script and in the correct version,
-otherwise errors may be raised by the computer.
-"""
-
 # Upload of packages to run the script
 import argparse
 import pickle
