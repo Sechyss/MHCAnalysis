@@ -17,22 +17,25 @@ filteredHLAs  -- Output filtered HLAs for that particular population group takin
 '''))
 
 
-parser.add_argument("-t", "--task", dest="task", help="Task to perform", type=str, choices=["allHLAs", "filteredHLAs"])
+parser.add_argument("-t", "--task", dest="task", help="Task to perform", type=str, choices=["allHLAs",
+                                                                                            "filteredHLAs",
+                                                                                            'merge-tables'])
 parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqtable", help="Allele frequency table",
                     type=str)
 parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
 parser.add_argument("-p", "--population", dest="population", help="String Population (all pops)", type=str)
 parser.add_argument("-x", "--spreadsheet", dest="spreadsheet", help="Excel spreadsheet with data", type=str)
 parser.add_argument("-y", "--spreadsheet", dest="spreadsheet2", help="Excel spreadsheet with data", type=str)
+parser.add_argument("-o", "--output", dest="output", help="Output file", type=str)
 
 args = parser.parse_args()
 
 
 def all_hlas():
     df = pd.read_excel(args.allelefreqtable, sheet_name='Sheet1', index_col=0)
-    relative_allefreq = df[df['Population'].str.contains(args.population)]
+    relative_allele_freq = df[df['Population'].str.contains(args.population)]
 
-    list_alleles = set(relative_allefreq['Allele'])
+    list_alleles = set(relative_allele_freq['Allele'])
 
     mhc_predict_df = pd.read_table(args.listhla, header=None, sep='\t')
 
@@ -62,11 +65,11 @@ def all_hlas():
 
 
 def filtered_hla():
-    allelesdf = all_hlas()
+    alleles_df = all_hlas()
     excel = pd.read_excel(args.spreadsheet, sheet_name='summarydata', index_col=0)
     list_to_filter = list(excel.columns)
     list_to_filter.pop(0)
-    filtered_df = allelesdf[~allelesdf[1].isin(list_to_filter)]
+    filtered_df = alleles_df[~alleles_df[1].isin(list_to_filter)]
     allele = list(filtered_df[1])
     length = list(filtered_df[2])
 
@@ -76,18 +79,13 @@ def filtered_hla():
 def combinetables():
     excel = pd.read_excel(args.spreadsheet, sheet_name='summarydata', index_col=0)
     excel2 = pd.read_excel(args.spreadsheet2, sheet_name='summarydata', index_col=0)
-
-
-
-
-
-
-
-
+    excel3 = pd.merge(left=excel, right=excel2, how='outer', left_index=True, right_index=True)
+    excel3 = excel3.reindex(sorted(excel3.columns), axis=1)
+    excel3.to_excel(args.output, sheet_name='summarydata')
 
 
 def main():
-    task = {'allHLAs': all_hlas, 'filteredHLAs': filtered_hla}
+    task = {'allHLAs': all_hlas, 'filteredHLAs': filtered_hla, 'merge-tables': combinetables}
     choosetask = str(args.task)
     task[choosetask]()
 
