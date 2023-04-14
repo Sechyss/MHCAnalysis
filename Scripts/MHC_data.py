@@ -23,6 +23,7 @@ parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqt
 parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
 parser.add_argument("-p", "--population", dest="population", help="String Population (all pops)", type=str)
 parser.add_argument("-x", "--spreadsheet", dest="spreadsheet", help="Excel spreadsheet with data", type=str)
+parser.add_argument("-y", "--spreadsheet", dest="spreadsheet2", help="Excel spreadsheet with data", type=str)
 
 args = parser.parse_args()
 
@@ -63,9 +64,21 @@ def all_hlas():
 def filtered_hla():
     allelesdf = all_hlas()
     excel = pd.read_excel(args.spreadsheet, sheet_name='summarydata', index_col=0)
-    filtered_hla = list(excel.columns)
-    filtered_hla.pop(0)
-    notmatching_hla = allelesdf.index(filtered_hla)
+    list_to_filter = list(excel.columns)
+    list_to_filter.pop(0)
+    filtered_df = allelesdf[~allelesdf[1].isin(list_to_filter)]
+    allele = list(filtered_df[1])
+    length = list(filtered_df[2])
+
+    print(','.join(allele), ','.join(map(str, length)))
+
+
+def combinetables():
+    excel = pd.read_excel(args.spreadsheet, sheet_name='summarydata', index_col=0)
+    excel2 = pd.read_excel(args.spreadsheet2, sheet_name='summarydata', index_col=0)
+
+
+
 
 
 
