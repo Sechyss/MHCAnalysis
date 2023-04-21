@@ -48,7 +48,7 @@ for key1 in dict_ids.keys():
         if value in temp_dict.keys():
             alleles = temp_dict[value]
             for i in alleles:
-                final_df.loc[key1][i] += 1
+                final_df.loc[key1][i] = final_df.loc[key1][i] + 1
         else:
             continue
 

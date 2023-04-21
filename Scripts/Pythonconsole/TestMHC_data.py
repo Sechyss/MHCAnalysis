@@ -48,10 +48,3 @@ print(', '.join(allele2), ','.join(map(str, length2)))
 excel2 = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/CSP_SNP_region/'
                        'Kmer_CSP_region_283-307_summarydata_Kenya.xlsx', sheet_name='summarydata', index_col=0)
 excel3 = pd.merge(left=excel, right=excel2, how='outer')
-
-
-
-def same_merge(x): return ','.join(x[x.notnull()].astype(str))
-
-
-df_new = excel3.groupby(level=0, axis=1).apply(lambda x: x.apply(same_merge, axis=1))
