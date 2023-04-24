@@ -8,7 +8,7 @@ import pandas as pd
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                  description=textwrap.dedent('''\
-Analysis of Matlab simulations results
+Printing of HLAs to run the prediction tool.
 ------------------------------------------
 Tasks added so far:
 allHLAs       -- Output all the HLAs for that particular population group
@@ -32,10 +32,16 @@ args = parser.parse_args()
 
 
 def all_hlas():
-    df = pd.read_excel(args.allelefreqtable, sheet_name='Sheet1', index_col=0)
-    relative_allele_freq = df[df['Population'].str.contains(args.population)]
+    df = pd.read_excel(args.allelefreqtable, sheet_name='Combination_HLAs', index_col=0)
+    relative_allele_freq = df.filter(like=args.population)
+    # set the threshold
+    threshold = 0
 
-    list_alleles = set(relative_allele_freq['Allele'])
+    # filter the DataFrame to select only rows whose values are over the threshold for all columns
+    filtered_df = relative_allele_freq[relative_allele_freq.apply(
+        lambda row: all(val > threshold for val in row), axis=1)]
+
+    list_alleles = set(filtered_df.index)
 
     mhc_predict_df = pd.read_table(args.listhla, header=None, sep='\t')
 
