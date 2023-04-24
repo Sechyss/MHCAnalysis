@@ -3,7 +3,6 @@ import textwrap
 
 import pandas as pd
 
-
 # =============================================================================
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -16,17 +15,16 @@ filteredHLAs  -- Output filtered HLAs for that particular population group takin
 
 '''))
 
-
-parser.add_argument("-t", "--task", dest="task", help="Task to perform", type=str, choices=["allHLAs",
-                                                                                            "filteredHLAs",
-                                                                                            'merge-tables'])
 parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqtable", help="Allele frequency table",
                     type=str)
 parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
 parser.add_argument("-p", "--population", dest="population", help="String Population (all pops)", type=str)
 parser.add_argument("-x", "--spreadsheet", dest="spreadsheet", help="Excel spreadsheet with data", type=str)
-parser.add_argument("-y", "--spreadsheet", dest="spreadsheet2", help="Excel spreadsheet with data", type=str)
+parser.add_argument("-y", "--spreadsheet2", dest="spreadsheet2", help="Excel spreadsheet with data", type=str)
 parser.add_argument("-o", "--output", dest="output", help="Output file", type=str)
+parser.add_argument("-t", "--task", dest="task", help="Task to perform", type=str, choices=["allHLAs",
+                                                                                            "filteredHLAs",
+                                                                                             'merge-tables'])
 
 args = parser.parse_args()
 
@@ -66,7 +64,6 @@ def all_hlas():
     length = list(finaldf[2])
     print(','.join(allele), ','.join(map(str, length)))
 
-    print(allele)
     return finaldf
 
 
