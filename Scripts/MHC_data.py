@@ -12,9 +12,11 @@ Printing of HLAs to run the prediction tool.
 Tasks added so far:
 allHLAs       -- Output all the HLAs for that particular population group
 filteredHLAs  -- Output filtered HLAs for that particular population group taking into account those already added
+merge-tables  -- Merge tables from different results into one single spreadsheet
 
 '''))
 
+# Parse the input for the different scripts
 parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqtable", help="Allele frequency table",
                     type=str)
 parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
@@ -24,8 +26,9 @@ parser.add_argument("-y", "--spreadsheet2", dest="spreadsheet2", help="Excel spr
 parser.add_argument("-o", "--output", dest="output", help="Output file", type=str)
 parser.add_argument("-t", "--task", dest="task", help="Task to perform", type=str, choices=["allHLAs",
                                                                                             "filteredHLAs",
-                                                                                             'merge-tables'])
+                                                                                            "merge-tables"])
 
+# Compile the list of flags for the script
 args = parser.parse_args()
 
 
@@ -56,27 +59,35 @@ def all_hlas():
 
     finaldf = mhc_predict_df[mhc_predict_df[1].isin(finalist_common)]
 
-    # This next part of the code can be removed to select a specific kmer size
+    # This next part of the code can be tweaked to select a specific kmer size
 
     finaldf = finaldf[finaldf[2] <= 11]  # <-- Change this line to select a specific kmer size
 
     allele = list(finaldf[1])
     length = list(finaldf[2])
+    # Print the list of alleles and lengths to copy into the command line for prediction tool
     print(','.join(allele), ','.join(map(str, length)))
 
     return finaldf
 
 
 def filtered_hla():
+    # Extract all the alleles that match the list using the previous function all_hlas()
     alleles_df = all_hlas()
+    # Extract the alleles from the table containing previously studied alleles
     excel = pd.read_excel(args.spreadsheet, sheet_name='summarydata', index_col=0)
     list_to_filter = list(excel.columns)
     list_to_filter.pop(0)
+
+    # Filter those already included to avoid duplicates and wasting time and memory
     filtered_df = alleles_df[~alleles_df[1].isin(list_to_filter)]
     allele = list(filtered_df[1])
     length = list(filtered_df[2])
 
+    # Print the list of alleles that haven't been filtered for prediction tool
     print(','.join(allele), ','.join(map(str, length)))
+
+    return filtered_df
 
 
 def combinetables():
@@ -89,6 +100,8 @@ def combinetables():
 
 def main():
     task = {'allHLAs': all_hlas, 'filteredHLAs': filtered_hla, 'merge-tables': combinetables}
+
+    # Read the flag argument for the task and call the function into main
     choosetask = str(args.task)
     task[choosetask]()
 
