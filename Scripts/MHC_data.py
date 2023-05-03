@@ -36,11 +36,11 @@ def all_hlas():
     df = pd.read_excel(args.allelefreqtable, sheet_name='Combination_HLAs', index_col=0)
     relative_allele_freq = df.filter(like=args.population)
     # set the threshold
-    threshold = 0
+    threshold = 0.01
 
     # filter the DataFrame to select only rows whose values are over the threshold for all columns
     filtered_df = relative_allele_freq[relative_allele_freq.apply(
-        lambda row: all(val > threshold for val in row), axis=1)]
+        lambda row: all(val >= threshold for val in row), axis=1)]
 
     list_alleles = set(filtered_df.index)
 

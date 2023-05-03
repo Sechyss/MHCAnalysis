@@ -57,7 +57,7 @@ urls = [
 
 new_data = pd.DataFrame()
 
-#writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/RawDataAllele_freq.xlsx',
+#writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/RawDataAllele_freq.xlsx',
 #                        engine='openpyxl')
 for i in tqdm(range(len(list_populations))):
     final_df = extract_table_from_html(urls[i])
@@ -74,13 +74,12 @@ new_data = new_data.fillna(0)
 
 # %% Exploration of the data to study a threshold
 
-new_data['mean'] = new_data.mean(axis=1)
 plt.figure(figsize=(10, 5))
 plt.xlabel('Allele frequency')
 plt.ylabel('Counts')
-counts, bins = np.histogram(new_data['mean'])
-plt.stairs(counts, bins)
+plt.hist(new_data['mean'], bins=30, edgecolor='black', color='white')
 plt.xticks(fontweight='bold')
 plt.yticks(fontweight='bold')
 plt.tight_layout()
+plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Allele_frequencies_histogram.pdf', dpi=300)
 plt.show()
