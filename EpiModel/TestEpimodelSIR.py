@@ -2,45 +2,52 @@ import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
-# Total population, N.
-N = 1000
-# Initial number of infected and recovered individuals, I0 and R0.
-I0, R0 = 1, 0
-# Everyone else, S0, is susceptible to infection initially.
-S0 = N - I0 - R0
+# Total population, Nc.
+Nc = 1000
+Na = 1000
+# Initial number of infected and recovered individuals, Ic0 and R0.
+Ic0 = 0
+Ia0 = 100
+# Everyone else, Sc0, is susceptible to infection initially.
+Sc0 = Nc - Ic0
+Sa0 = Na - Ia0
 # Contact rate, beta, and mean recovery rate, gamma, (in 1/days).
-beta, gamma = 0.2, 1. / 10
+phiC = 0.02
+phiA = 0.04
 # A grid of time points (in days)
-t = np.linspace(0, 160, 160)
+t = np.linspace(0, 120, 120)
+# Rate of death and birth for the aphid population
+b = 0.10
+d = 0.08
 
 
 # The SIR model differential equations.
-def deriv(y, t, N, beta, gamma):
-    S, I, R = y
-    dSdt = -beta * S * I / N
-    dIdt = beta * S * I / N - gamma * I
-    dRdt = gamma * I
-    return dSdt, dIdt, dRdt
+def deriv(y, t, Ncabbage, Naphids, phiCabbage, phiAphids, birth, death):
+    Sc, Sa, Ic, Ia = y
+    dScdt = -(phiAphids * Sc * Ia) / Ncabbage
+    dIcdt = (phiAphids * Sc * Ia) / Ncabbage
+    dSadt = birth * (Sa+Ia) /Naphids - (phiCabbage * Ic + death) * Sa/Naphids
+    dIadt = (phiCabbage * Ic) * Sa/Naphids - death*(Ia/Naphids)
+    return dScdt, dIcdt, dSadt, dIadt
 
 
 # Initial conditions vector
-y0 = S0, I0, R0
+y0 = Sc0, Ic0, Sa0, Ia0
 # Integrate the SIR equations over the time grid, t.
-ret = odeint(deriv, y0, t, args=(N, beta, gamma))
-S, I, R = ret.T
+ret = odeint(deriv, y0, t, args=(Nc, Na, phiC, phiA, b, d))
+Scabbage, Icabbage, Saphid, Iaphid = ret.T
 
-# Plot the data on three separate curves for S(t), I(t) and R(t)
+# Plot the data on three separate curves for Scabagge(t), Icabbage(t), Saphid(t) and Iaphid(t)
 fig = plt.figure(facecolor='w')
 ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
-ax.plot(t, S / 1000, 'b', alpha=0.5, lw=2, label='Susceptible')
-ax.plot(t, I / 1000, 'r', alpha=0.5, lw=2, label='Infected')
-ax.plot(t, R / 1000, 'g', alpha=0.5, lw=2, label='Recovered with immunity')
+ax.plot(t, Scabbage, 'blue', alpha=0.5, lw=2, label='Susceptible Cabbages')
+ax.plot(t, Icabbage, 'red', alpha=0.5, lw=2, label='Infected Cabbages')
+ax.plot(t, Saphid, 'green', alpha=0.5, lw=2, label='Susceptible Aphids')
+ax.plot(t, Iaphid, 'black', alpha=0.5, lw=2, label='Infected Aphids')
 ax.set_xlabel('Time /days')
-ax.set_ylabel('Number (1000s)')
-ax.set_ylim(0, 1.2)
+ax.set_ylabel('Number')
 ax.yaxis.set_tick_params(length=0)
 ax.xaxis.set_tick_params(length=0)
-ax.grid(b=True, which='major', c='w', lw=2, ls='-')
 legend = ax.legend()
 legend.get_frame().set_alpha(0.5)
 for spine in ('top', 'right', 'bottom', 'left'):
