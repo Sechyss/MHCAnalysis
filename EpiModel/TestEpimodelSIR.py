@@ -7,7 +7,7 @@ Nc = 1000
 Na = 1000
 # Initial number of infected and recovered individuals, Ic0 and R0.
 Ic0 = 0
-Ia0 = 100
+Ia0 = 10
 # Everyone else, Sc0, is susceptible to infection initially.
 Sc0 = Nc - Ic0
 Sa0 = Na - Ia0
@@ -15,7 +15,7 @@ Sa0 = Na - Ia0
 phiC = 0.02
 phiA = 0.04
 # A grid of time points (in days)
-t = np.linspace(0, 120, 120)
+t = np.linspace(0, 365, 365)
 # Rate of death and birth for the aphid population
 b = 0.10
 d = 0.08
