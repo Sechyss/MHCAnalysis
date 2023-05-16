@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import seaborn as sns
 import numpy as np
+import itertools
 
 
 def extract_table_from_html(url):  # Function to extract table from html address
@@ -82,8 +83,10 @@ new_data = new_data.fillna(0)
 
 # %% Exploration of the data to study a threshold
 
-new_data = new_data[new_data.max(axis=1) > 0.01]
+new_data = new_data[new_data.max(axis=1) > 0.15]
 descriptivedata = new_data.transpose().replace(0, np.nan).describe()
+
+#%% Plotting the data and exploration
 #descriptivedata.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/AlleleFreqdescriptive.csv')
 
 plt.figure(figsize=(10,6))
@@ -176,3 +179,16 @@ cbar.ax.set_ylabel('Percentage of Shared Values', rotation=270, labelpad=15)
 plt.tight_layout()
 plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Allele_sharing_heatmap.pdf', dpi=300)
 plt.show()
+
+#%% Print the table and list of alleles and their lenghths
+
+All_HLAs = new_data.index.tolist()
+
+lengths = [8,9,10,11]
+
+combinations = list(itertools.product(All_HLAs, lengths))
+
+alleles = ['HLA-' + str(x[0]) for x in combinations]
+lengths = [x[1] for x in combinations]
+
+print(','.join(alleles), ','.join(map(str, lengths)))
