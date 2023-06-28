@@ -36,11 +36,11 @@ plt.show()
 
 from scipy import optimize
 
-
 x = [100, 19015, 983, 664, 2, 58, 9179, 26588, 295, 31587, 503, 16389]
 y = [91.9, 97.2, 66.6, 95.6, 8.1, 19.8, 40.2, 98.8, 26.5, 91.5, 98.0, 99.7]
 x.sort()
 y.sort()
+
 
 def log_equation(x_value, intercept, slope):
     import numpy as np
@@ -51,7 +51,6 @@ p0 = [0.0001, 0.0001]
 params, cv = optimize.curve_fit(log_equation, xdata=x, ydata=y, p0=p0)
 plt.plot(x, y, 'o')
 plt.plot(x, log_equation(x, params[0], params[1]), 'red')
-plt.text(5000, 10, u'y = '+str(round(params[0],2))+'+'+str(round(params[1], 2))+'log(x)', style='italic')
+plt.text(5000, 10, u'y = ' + str(round(params[0], 2)) + '+' + str(round(params[1], 2)) + 'log(x)', style='italic')
 
 plt.show()
-

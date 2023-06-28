@@ -6,8 +6,9 @@ import matplotlib.colors as colors
 import seaborn as sns
 import numpy as np
 import itertools
+import pickle
 
-
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 def extract_table_from_html(url):  # Function to extract table from html address
     html = requests.get(url).content
     df_list = pd.read_html(html)
@@ -80,7 +81,8 @@ new_data = new_data.fillna(0)
 #new_data.to_excel(writer, sheet_name='Combination_HLAs')
 
 #writer.close()
-
+with open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_alleles.pickle', 'wb') as f:
+    pickle.dump(dict_alleles, f)
 # %% Exploration of the data to study a threshold
 
 new_data = new_data[new_data.max(axis=1) > 0.15]
@@ -181,8 +183,21 @@ plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/All
 plt.show()
 
 #%% Print the table and list of alleles and their lenghths
+new_data = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
+                         sheet_name='FilteredAlleles', index_col=0)
+
+new_data = new_data[new_data.max(axis=1) > 0.01]
+
+listallelesnetpanmhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/ListMHC_humans_netmhcpan.txt',
+                               header=None, sep='\t')
+
 
 All_HLAs = new_data.index.tolist()
+temp_hlas = ['HLA-' + str(x) for x in All_HLAs]
+netmhcalleles = list(listallelesnetpanmhc[0])
+temp_list = [x.replace(' ', '') for x in netmhcalleles]
+common_mhc = list(set(temp_hlas) & set(temp_list))
+print('" "'.join(set(common_mhc)))
 
 lengths = [8,9,10,11]
 
@@ -191,4 +206,24 @@ combinations = list(itertools.product(All_HLAs, lengths))
 alleles = ['HLA-' + str(x[0]) for x in combinations]
 lengths = [x[1] for x in combinations]
 
-print(','.join(alleles), ','.join(map(str, lengths)))
+#print(','.join(alleles), ','.join(map(str, lengths)))
+
+#%% Print top ABCs
+
+new_data = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
+                         sheet_name='TOP_ABC')
+values = new_data.values.ravel()
+flattenlist = set(list(values))
+listallelesnetpanmhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/ListMHC_humans_netmhcpan.txt',
+                               header=None, sep='\t')
+netmhcalleles = list(listallelesnetpanmhc[0])
+temp_list = [x.replace(' ', '') for x in netmhcalleles]
+common_mhc = list(flattenlist & set(temp_list))
+print('" "'.join(set(common_mhc)))
+
+new_dict = {}
+for column in new_data.columns:
+    new_dict.update({column: new_data[column].tolist()})
+
+with open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_TopABC.pickle', 'wb') as f:
+    pickle.dump(new_dict, f)

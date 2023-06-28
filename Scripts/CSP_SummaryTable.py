@@ -50,7 +50,11 @@ final_dict = {}
 
 # Association of Kmer with the sequences ids
 for key in mhc_run_dict.keys():
-    number_of_sequences = len(mhc_run_dict[key])
+    value = mhc_run_dict[key]
+    if isinstance(value, str):
+        number_of_sequences = 1
+    else:
+        number_of_sequences = len(mhc_run_dict[key])
     dict_ids.update({key: list(range(starting_id, starting_id + number_of_sequences))})
     starting_id = starting_id + number_of_sequences
     final_dict.update({key: number_of_sequences})
@@ -80,7 +84,7 @@ for key1 in dict_ids.keys():
         if value in temp_dict.keys():
             alleles = temp_dict[value]
             for i in alleles:
-                final_df.loc[key1][i] += 1
+                final_df.loc[key1, i] = final_df.loc[key1, i] + 1
         else:
             continue
 

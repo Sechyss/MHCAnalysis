@@ -15,15 +15,15 @@ Ia0 = 10
 Sc0 = Nc - Ic0
 Sa0 = Na - Ia0
 # Contact rate, beta, and mean recovery rate, gamma, (in 1/days).
-phiC = 0.02
-phiA = 0.04
+phiC = 0.006
+phiA = 0.004
 alphaC = 1/days_to_develop_infection_cabbage
 
 # A grid of time points (in days)
 t = np.linspace(0, 44, 44)
 # Rate of death and birth for the aphid population
-b = 0.09
-d = 0.08
+b = 0.001
+d = 0.001
 
 # The SEI model differential equations.
 def deriv(y, t, Ncabbage, Naphids, phiCabbage, phiAphids, birth, death, alpha):
