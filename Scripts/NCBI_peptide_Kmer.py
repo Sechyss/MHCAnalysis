@@ -1,9 +1,11 @@
 import argparse
 import textwrap
+import pickle
 
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+from tqdm import tqdm
 
 
 def main():
@@ -21,10 +23,10 @@ def main():
 
     ####################################################################################################################
     fasta_file = SeqIO.parse(args.sequences, 'fasta')
+    dictionary = {}
+    with open(str(args.output) + '.fasta', 'a') as f1:
 
-    with open(args.output, 'a') as f1:
-
-        for seq_record in fasta_file:
+        for seq_record in tqdm(fasta_file):
             starting_point = 0  # Starting point of the peptide sequence
             end_point = int(args.kmer)  # Ending point of the peptide sequence
             sequence_id = seq_record.id
@@ -34,3 +36,26 @@ def main():
                 new_fasta = 'Kmer_' + str(starting_point) + '_' + str(end_point) + '_' + str(sequence_id)
                 seq_record = SeqRecord(peptide, id=new_fasta, description='')
                 SeqIO.write(seq_record, f1, 'fasta')
+                if peptide in dictionary.keys():
+                    dictionary[peptide].append(new_fasta)
+                else:
+                    dictionary.update({peptide: [new_fasta]})
+                starting_point += 1
+                end_point += 1
+
+    with open(str(args.output) + '_filtered.fasta', 'a') as f2:
+        Sequence_counter = 0
+
+        for key in tqdm(dictionary.keys()):
+            peptide = key
+            sequence_id = 'Sequence_' + str(Sequence_counter)
+            seq_record = SeqRecord(peptide, id=sequence_id, description='')
+            SeqIO.write(seq_record, f2, 'fasta')
+            Sequence_counter += 1
+
+    with open(str(args.output) + '.pickle', 'wb') as f:
+        pickle.dump(dictionary, f)
+
+
+if __name__ == '__main__':
+    main()
