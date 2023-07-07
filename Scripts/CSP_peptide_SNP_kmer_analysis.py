@@ -14,7 +14,7 @@ from tqdm import tqdm
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=textwrap.dedent('''\
-    Creation of all potential sequences for CSP based on SNPs.
+    Creation of all potential raw_real_sequences for CSP based on SNPs.
     ------------------------------------------
     '''))
 
@@ -115,8 +115,8 @@ def main():
         if len(SNP_hits) > 0:
             dict_sliced = {x - starting_point: dict_SNPs[x + int(mhc_region_start + 1)] for x in
                            SNP_hits}  # Get the dictionary of matching regions
-            new_sequence = generate_combinations(kmer.values, dict_sliced)  # Generate the combination of sequences
-            collector_object.extend(new_sequence)  # Add the new sequences to the list
+            new_sequence = generate_combinations(kmer.values, dict_sliced)  # Generate the combination of raw_real_sequences
+            collector_object.extend(new_sequence)  # Add the new raw_real_sequences to the list
             collector_Seqs.update(
                 {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
                  new_sequence})
@@ -145,7 +145,7 @@ def main():
             if type(collector_Seqs[key]) != list:
                 nt_sequence = Seq(collector_Seqs[key])  # Create the Seq object to write into the Fasta file
                 fastaheader = collector_ids[key]  # Get the header from the dictionary
-                if '*' not in nt_sequence:  # Remove sequences with Stop codons mid-Kmer
+                if '*' not in nt_sequence:  # Remove raw_real_sequences with Stop codons mid-Kmer
                     seq_record = SeqRecord(nt_sequence, id=fastaheader, description='')
                     SeqIO.write(seq_record, f1, 'fasta')
             else:  # This statement affect those Kmers with more than one variant

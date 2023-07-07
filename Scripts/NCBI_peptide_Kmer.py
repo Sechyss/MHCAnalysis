@@ -15,7 +15,7 @@ def main():
     ------------------------------------------
     '''))
 
-    parser.add_argument("-f", "--fasta", metavar='file.fasta', dest="sequences", help="Sequences in fasta", type=str)
+    parser.add_argument("-f", "--fasta", metavar='file.fasta', dest="raw_real_sequences", help="Sequences in fasta", type=str)
     parser.add_argument("-k", "--kmer", dest="kmer", help="Kmer length", type=int)
     parser.add_argument("-o", "--output", metavar='file.fasta', dest="output", help="Output file to save", type=str)
 

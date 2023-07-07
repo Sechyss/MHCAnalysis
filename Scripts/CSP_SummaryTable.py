@@ -48,7 +48,7 @@ dict_ids = {}
 starting_id = 0
 final_dict = {}
 
-# Association of Kmer with the sequences ids
+# Association of Kmer with the raw_real_sequences ids
 for key in mhc_run_dict.keys():
     value = mhc_run_dict[key]
     if isinstance(value, str):
@@ -77,7 +77,7 @@ final_df = pd.DataFrame.from_dict(final_dict, orient='index', columns=['Variants
 for allele in successful_alleles:
     final_df[allele] = 0
 
-# Sum the number of sequences in each allele that bind to a particular Kmer
+# Sum the number of raw_real_sequences in each allele that bind to a particular Kmer
 for key1 in dict_ids.keys():
     values = dict_ids[key1]
     for value in values:

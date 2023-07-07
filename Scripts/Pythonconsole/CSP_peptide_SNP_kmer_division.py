@@ -62,8 +62,8 @@ while end_point <= len(reference_peptide):  # Iterate through the region of inte
     if len(SNP_hits) > 0:
         dict_sliced = {x - starting_point: dict_SNPs[x + int(mhc_region_start + 1)] for x in
                        SNP_hits}  # Get the dictionary of matching regions
-        new_sequence = generate_combinations(kmer.values, dict_sliced)  # Generate the combination of sequences
-        collector_object.extend(new_sequence)  # Add the new sequences to the list
+        new_sequence = generate_combinations(kmer.values, dict_sliced)  # Generate the combination of raw_real_sequences
+        collector_object.extend(new_sequence)  # Add the new raw_real_sequences to the list
         collector_Seqs.update(
             {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
              new_sequence})

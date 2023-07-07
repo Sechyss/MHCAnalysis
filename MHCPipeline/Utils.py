@@ -10,7 +10,7 @@ def transformmhclist(filename):
 
 
 def generate_sequences(reference_seq, snps):
-    """Generate all potential sequences based on a reference sequence and SNPs"""
+    """Generate all potential raw_real_sequences based on a reference sequence and SNPs"""
     sequences = [reference_seq]
     for snp in snps:
         new_sequences = []
