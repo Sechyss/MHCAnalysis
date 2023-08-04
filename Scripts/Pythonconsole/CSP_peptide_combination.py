@@ -73,8 +73,8 @@ def main():
     collector_object = []
 
     print('Generating all possible combinations...')
-    new_sequence = generate_combinations(indexed_sequence.values, dict_SNPs)  # Generate the combination of sequences
-    collector_object.extend(new_sequence)  # Add the new sequences to the list
+    new_sequence = generate_combinations(indexed_sequence.values, dict_SNPs)  # Generate the combination of raw_real_sequences
+    collector_object.extend(new_sequence)  # Add the new raw_real_sequences to the list
 
     print('Creating fasta file of all possible combinations...')
     counter = 0

@@ -80,3 +80,87 @@ writer.close()
 
 with open('/Users/u2176312/OneDrive - University of Warwick/CSP/Allele_seq_ids.pickle', 'wb') as f:
     pickle.dump(dict_tosave, f)
+
+
+# %% Dictionary of the NCBI sequences and kmers
+ncbi_prediction = pd.read_table('/Users/u2176312/OneDrive - University of '
+                                'Warwick/CSP/NCBI_CSP/TopABC_matchingseqs/TopABC_matchingseqs.txt')
+mhc_run_successful = ncbi_prediction.sort_values(by=['allele'])
+
+successful_alleles = list(set(mhc_run_successful['allele']))
+successful_alleles.sort()
+temp_file = open('/Users/u2176312/OneDrive - University of '
+                 'Warwick/CSP/NCBI_CSP/NCBI_CSP_peptides_11kmer.pickle', 'rb')
+ncbi_dict = pickle.load(temp_file)
+
+dict_ids = {}
+starting_id = 0
+final_dict = {}
+kmer_start = 0
+kmer_end = 11
+
+for key in ncbi_dict.keys():
+    value = ncbi_dict[key]
+    if isinstance(value, str):
+        number_of_sequences = 1
+    else:
+        number_of_sequences = len(ncbi_dict[key])
+
+    kmerid = 'Kmer_' + str(kmer_start) + '_' + str(kmer_end)
+    dict_ids.update({kmerid: list(range(starting_id, starting_id + number_of_sequences))})
+    starting_id = starting_id + number_of_sequences
+    final_dict.update({kmerid: number_of_sequences})
+    kmer_start += 1
+    kmer_end += 1
+
+
+temp_dict = {}
+for allele in successful_alleles:
+    filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]
+    redefined_df = filtered_df.sort_values(by=['seq_num'])
+    for index, row in redefined_df.iterrows():
+        if row['seq_num'] not in temp_dict.keys():
+            temp_dict.update({row['seq_num']: [row['allele']]})
+
+        else:
+            temp_dict[row['seq_num']].append(row['allele'])
+
+final_df = pd.DataFrame.from_dict(final_dict, orient='index', columns=['Variants'])
+
+for allele in successful_alleles:
+    final_df[allele] = 0
+
+for key1 in dict_ids.keys():
+    values = dict_ids[key1]
+    for value in values:
+        if value in temp_dict.keys():
+            alleles = temp_dict[value]
+            for i in alleles:
+                final_df.loc[key1, i] = final_df.loc[key1, i] + 1
+        else:
+            continue
+
+dict_tosave = {}
+for allele in successful_alleles:
+    filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]
+    redefined_df = filtered_df.sort_values(by=['seq_num'])
+    for index, row in redefined_df.iterrows():
+        if row['allele'] not in dict_tosave.keys():
+            dict_tosave.update({row['allele']: [int(row['seq_num']) - 1]})
+
+        else:
+            dict_tosave[row['allele']].append(int(row['seq_num']) - 1)
+
+sheet2 = pd.DataFrame.from_dict(dict_tosave, orient='index')
+sheet2 = sheet2.transpose()
+
+writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
+                        'TopABC_matchingseqs/TopABC_matchingseqs_summarydata.xlsx',
+                        engine='openpyxl')
+final_df.to_excel(writer, sheet_name='summarydata')
+sheet2.to_excel(writer, sheet_name='Alleles&Sequences')
+writer.close()
+
+with open('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
+          'TopABC_matchingseqs/TopABC_matchingseqs.pickle', 'wb') as f:
+    pickle.dump(dict_tosave, f)
