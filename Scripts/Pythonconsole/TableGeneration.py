@@ -186,7 +186,7 @@ plt.show()
 new_data = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
                          sheet_name='FilteredAlleles', index_col=0)
 
-new_data = new_data[new_data.max(axis=1) > 0.01]
+# new_data = new_data[new_data.max(axis=1) > 0.01]
 
 listallelesnetpanmhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/ListMHC_humans_netmhcpan.txt',
                                header=None, sep='\t')
