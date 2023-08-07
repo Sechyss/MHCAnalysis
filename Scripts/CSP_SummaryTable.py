@@ -74,8 +74,13 @@ for allele in successful_alleles:
 # Creation of the final dataframe
 final_df = pd.DataFrame.from_dict(final_dict, orient='index', columns=['Variants'])
 
-for allele in successful_alleles:
-    final_df[allele] = 0
+newdata = {col: [] * len(final_df) for col in successful_alleles}
+new_df = pd.DataFrame(newdata)
+
+updateddf = pd.concat([final_df, new_df], axis=1)
+
+final_df = updateddf.copy()
+final_df = final_df.fillna(0)
 
 # Sum the number of raw_real_sequences in each allele that bind to a particular Kmer
 for key1 in dict_ids.keys():
