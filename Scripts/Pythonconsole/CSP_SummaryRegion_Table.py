@@ -1,10 +1,12 @@
 import pandas as pd
 import pickle
 
+from tqdm import tqdm
+
 # Import of data and filtering based on rank
 
 mhc_run = pd.read_table('/Users/u2176312/OneDrive - University of '
-                        'Warwick/CSP/AllelePops/All_HLAs_alllenghts_RTSSvaccine.txt')
+                        'Warwick/CSP/AllelePops/Filtered_HLAs_all_all_lenght_corrected.txt', sep='\t')
 temp_file = open('/Users/u2176312/OneDrive - University of '
                  'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_aa.fasta_dict.pickle', 'rb')
 mhc_run_dict = pickle.load(temp_file)
@@ -20,7 +22,7 @@ dict_ids = {}
 starting_id = 0
 final_dict = {}
 
-for key in mhc_run_dict.keys():
+for key in tqdm(mhc_run_dict.keys()):
     value = mhc_run_dict[key]
     if isinstance(value, str):
         number_of_sequences = 1
@@ -31,7 +33,7 @@ for key in mhc_run_dict.keys():
     final_dict.update({key: number_of_sequences})
 
 temp_dict = {}
-for allele in successful_alleles:
+for allele in tqdm(successful_alleles):
     filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]
     redefined_df = filtered_df.sort_values(by=['seq_num'])
     for index, row in redefined_df.iterrows():
@@ -44,10 +46,15 @@ for allele in successful_alleles:
 final_df = pd.DataFrame.from_dict(final_dict, orient='index', columns=['Variants'])
 
 #%%
-for allele in successful_alleles:
-    final_df[allele] = 0
+newdata = {col: [] * len(final_df) for col in successful_alleles}
+new_df = pd.DataFrame(newdata)
 
-for key1 in dict_ids.keys():
+updateddf = pd.concat([final_df, new_df], axis=1)
+
+final_df = updateddf.copy()
+final_df = final_df.fillna(0)
+
+for key1 in tqdm(dict_ids.keys()):
     values = dict_ids[key1]
     for value in values:
         if value in temp_dict.keys():
