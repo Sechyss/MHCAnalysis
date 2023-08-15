@@ -208,6 +208,18 @@ lengths = [x[1] for x in combinations]
 
 #print(','.join(alleles), ','.join(map(str, lengths)))
 
+
+# %% Sanity Checks fpr the full list vs successful ones
+
+listsucdess_all = pd.read_excel('/Users/u2176312/OneDrive - University of '
+                          'Warwick/CSP/AllelePops/All_HLAs_Kmer_CSP_region_273-375_summarydata_length_all.xlsx',
+                          sheet_name='summarydata', index_col=0)
+list_success = listsucdess_all.columns.tolist()
+list_success.remove('Variants')
+
+intersection_vals = list(set(common_mhc).difference(set(list_success)))
+print('" "'.join(set(intersection_vals[:])))
+
 #%% Print top ABCs
 
 new_data = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
