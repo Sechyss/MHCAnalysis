@@ -103,8 +103,8 @@ z = venn3_circles([HLAsKenya, HLAsFinland, HLAsPapuaNewGuinea], linestyle='dotte
 
 plt.tight_layout()
 
-plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/Figures/VennKenyaFinlandPapuaNewGuineacomparison.pdf',
-            dpi=300)
+#plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/Figures/VennKenyaFinlandPapuaNewGuineacomparison.pdf',
+#            dpi=300)
 plt.show()
 
 # %%
