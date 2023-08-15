@@ -53,13 +53,13 @@ for seq_record in fastafile:
 
 final_dict = {}
 
-for key in tqdm(mhc_run_dict.keys()):
-    value = mhc_run_dict[key]
+for key1 in tqdm(mhc_run_dict.keys()):
+    value = mhc_run_dict[key1]
     if isinstance(value, str):
         number_of_sequences = 1
     else:
-        number_of_sequences = len(mhc_run_dict[key])
-    final_dict.update({key: number_of_sequences})
+        number_of_sequences = len(mhc_run_dict[key1])
+    final_dict.update({key1: number_of_sequences})
 
 matching_dict = slice_dict(final_dict, dict_sequence_order.keys())
 
