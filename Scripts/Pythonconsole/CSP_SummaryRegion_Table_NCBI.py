@@ -17,16 +17,16 @@ def slice_dict(dictionary, keys):
     A new dictionary containing only the keys and values that match the list of keys.
   """
     new_dict = {}
-    for key in keys:
-        if key in dictionary:
-            new_dict[key] = dictionary[key]
+    for key2 in keys:
+        if key2 in dictionary:
+            new_dict[key2] = dictionary[key2]
     return new_dict
 
 
-# Import of data and filtering based on rank
+# %%  Import of data and filtering based on rank
 
 mhc_run = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
-                        'CSP/NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/NCBI_TopABC_all_lengths_NCBIseqs.txt',
+                        'CSP/NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/NCBI_TopABC_lenght11_ncbiseqs.txt',
                         sep='\t')
 temp_file = open('/Users/u2176312/OneDrive - University of '
                  'Warwick/CSP/NCBI_CSP/NCBI_CSP_peptides_11kmer.pickle', 'rb')
@@ -111,12 +111,12 @@ sheet2 = pd.DataFrame.from_dict(dict_tosave, orient='index')
 sheet2 = sheet2.transpose()
 
 writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
-                        'resultsPredictionBinding_NCBI_only_TopABC/TopABC_NCBI_summarydata.xlsx',
+                        'resultsPredictionBinding_NCBI_only_TopABC/TopABC_NCBI_length11_summarydata.xlsx',
                         engine='openpyxl')
 final_df.to_excel(writer, sheet_name='summarydata')
 sheet2.to_excel(writer, sheet_name='Alleles&Sequences')
 writer.close()
 
 with open('/Users/u2176312/OneDrive - University of Warwick/'
-          'CSP/NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/Allele_seq_ids_NCBI.pickle', 'wb') as f:
+          'CSP/NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/Allele_seq_ids_NCBI_length11.pickle', 'wb') as f:
     pickle.dump(temp_dict, f)
