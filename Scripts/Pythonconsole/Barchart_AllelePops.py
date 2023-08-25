@@ -112,17 +112,17 @@ list_topABC_2 = [
 
 # %% Upload the data and the functions to run the plot
 Dataframe = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                          'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_TopABC_summarydata_data.xlsx',
+                          'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length_all.xlsx',
                           sheet_name='summarydata', index_col=0)
 tempfile = open('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                '/AllelePops/Allele_seq_ids_273-375_region_RTSS_alllengths.pickle', 'rb')
+                '/AllelePops/All_HLAs/All_Allele_seq_ids_273-375_region_RTSS_length_all.pickle', 'rb')
 dictionary_alleles = pickle.load(tempfile)
-dictionary_topABC_2 = {key: dictionary_alleles[key] for key in list_topABC_2}
+#dictionary_topABC_2 = {key: dictionary_alleles[key] for key in list_topABC_2}
 x_axis = Dataframe.index.to_numpy()
 number_variants = Dataframe['Variants'].to_numpy()
 
 # %%
-hits = extractionofpercentages(dictionary_topABC_2)
+hits = extractionofpercentages(dictionary_alleles)
 fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 10), sharex=True)
 # Creation of the plot with the different populations
 ax1.bar(x=x_axis, height=number_variants, edgecolor='black', color='white')
@@ -134,13 +134,13 @@ ax2.set_title('World Population (% of variants recognised)', loc='left', y=1, we
 plt.xticks(fontsize=9, fontweight='bold', rotation='vertical')
 plt.tight_layout()
 plt.savefig('/Users/u2176312/OneDrive - University of '
-            'Warwick/CSP/AllelePops/TopABCResults_2/Kmer_Variant_recognition_topABC.pdf', dpi=300)
+            'Warwick/CSP/AllelePops/All_HLAs/Kmer_Variant_recognition_allHLAs.pdf', dpi=450)
 plt.show()
 
 # %% ----------------------------------------------------------------
 
 newdf = Dataframe.drop(['Variants'], axis=1)
-newdf = newdf.filter(items=list_topABC_2)
+#newdf = newdf.filter(items=list_topABC_2)
 row_sums = newdf.apply(lambda x: x.sum())
 newdf = newdf.transpose()
 newdf['Sum'] = row_sums
@@ -150,33 +150,33 @@ add_labels(x_axis, hits, axis=ax2)
 plt.xticks(fontsize=9, fontweight='bold', rotation='vertical')
 plt.tight_layout()
 plt.savefig('/Users/u2176312/OneDrive - University of '
-            'Warwick/CSP/AllelePops/TopABCResults_2/HLA_Variant_recognition_alllenghts.pdf', dpi=300)
+            'Warwick/CSP/AllelePops/All_HLAs/HLA_Variant_recognition_alllenghts.pdf', dpi=600)
 plt.show()
 
 # %% ----------------------------------------------------------------
 
 # Read the data from the Excel files.
 length8 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                        'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length8.xlsx',
+                        'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length08.xlsx',
                         sheet_name='summarydata', index_col=0)
 length9 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                        'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length9.xlsx',
+                        'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length09.xlsx',
                         sheet_name='summarydata', index_col=0)
 length10 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                         'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length10.xlsx',
+                         'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length10.xlsx',
                          sheet_name='summarydata', index_col=0)
 length11 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                         'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length11.xlsx',
+                         'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length11.xlsx',
                          sheet_name='summarydata', index_col=0)
 
 length8 = length8.drop('Variants', axis=1)
-length8 = length8.filter(items=list_topABC_2)
+#length8 = length8.filter(items=list_topABC_2)
 length9 = length9.drop('Variants', axis=1)
-length9 = length9.filter(items=list_topABC_2)
+#length9 = length9.filter(items=list_topABC_2)
 length10 = length10.drop('Variants', axis=1)
-length10 = length10.filter(items=list_topABC_2)
+##length10 = length10.filter(items=list_topABC_2)
 length11 = length11.drop('Variants', axis=1)
-length11 = length11.filter(items=list_topABC_2)
+#length11 = length11.filter(items=list_topABC_2)
 
 # Transpose all datasets.
 length8 = length8.T
@@ -185,7 +185,7 @@ length10 = length10.T
 length11 = length11.T
 
 # Plot the data.
-fig, axes = plt.subplots(4, 1, figsize=(20, 10), sharex=False)
+fig, axes = plt.subplots(4, 1, figsize=(25, 25), sharex=False)
 
 sns.barplot(x=length8.index, y=length8.sum(axis=1), ax=axes[0])
 axes[0].set_title('Length 8')
@@ -204,16 +204,29 @@ for ax in axes:
 
 plt.tight_layout()
 plt.savefig('/Users/u2176312/OneDrive - University of '
-            'Warwick/CSP/AllelePops/TopABCResults_2/HLAs_Variant_recognition_lengths_divided.pdf', dpi=300)
+            'Warwick/CSP/AllelePops/All_HLAs/HLAs_Variant_recognition_lengths_divided.pdf', dpi=1000)
 plt.show()
+
+#%% New dictionary of HLAs per population
+
+Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
+                      sheet_name='FilteredAlleles', index_col='Allele')
+
+result_dict = {}
+
+# Iterate through the DataFrame
+for column in Table.columns:
+    result_dict[column] = ['HLA-' + str(index) for index, value in Table[column].items() if value > 0]
+
+
 
 # %%% Plot divided by countries
 
-temp_file = open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_TopABC.pickle',
-                 'rb')
-dict_alleles = pickle.load(temp_file)
+#temp_file = open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_alleles.pickle',
+#                 'rb')
+#dict_alleles = pickle.load(temp_file)
 
-list_countries = [x for x in dict_alleles.keys()]
+list_countries = [x for x in result_dict.keys()]
 color_codes = [
     '#E69F00',
     '#56B4E9',
@@ -240,11 +253,11 @@ color_dictionary = dict(zip(list_countries, color_codes))
 new_df = pd.DataFrame()
 new_df['Variants'] = Dataframe['Variants']
 
-for country in dict_alleles.keys():
-    alleles = [str(x) for x in dict_alleles[country]]
-    topABC_2 = set(list_topABC_2)
-    topABC_2_intersect = topABC_2.intersection(set(alleles))
-    country_summary = slice_dict(dictionary_alleles, topABC_2_intersect)
+for country in result_dict.keys():
+    alleles = [str(x) for x in result_dict[country]]
+    #topABC_2 = set(list_topABC_2)
+    #topABC_2_intersect = topABC_2.intersection(set(alleles))
+    country_summary = slice_dict(dictionary_alleles, alleles)
     hits = extractionofpercentages(country_summary)
     new_df[country] = hits
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(25, 20), sharex=True)
@@ -266,30 +279,30 @@ for country in dict_alleles.keys():
     # ax1.set_yticks(yticks1)
     # ax2.set_yticks(yticks2)
     plt.tight_layout()
-    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/TopABCResults_2/CountryFigures/'
-                'Kmer_Variant_recognition_' + country + '.pdf', dpi=300)
+    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/All_HLAs/CountryFigures/'
+                'Kmer_Variant_recognition_' + country + '.pdf', dpi=600)
     plt.show()
 
 new_df.to_csv(
     '/Users/u2176312/OneDrive - University of '
-    'Warwick/CSP/AllelePops/TopABCResults_2/Kmer_Variant_recognition_world_rawdata.csv')
+    'Warwick/CSP/AllelePops/All_HLAs/Kmer_Variant_recognition_world_rawdata_allHLAs.csv')
 
 # %% Getting the unique number of sequences found in each length
 
 length8 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                        'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length8.xlsx',
+                        'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length08.xlsx',
                         sheet_name='Alleles&Sequences', index_col=0).dropna()
 
 length9 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                        'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length9.xlsx',
+                        'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length09.xlsx',
                         sheet_name='Alleles&Sequences', index_col=0).dropna()
 
 length10 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                         'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length10.xlsx',
+                        'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length10.xlsx',
                          sheet_name='Alleles&Sequences', index_col=0).dropna()
 
 length11 = pd.read_excel('/Users/u2176312/OneDrive - University of '
-                         'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_summarydata_length11.xlsx',
+                        'Warwick/CSP/AllelePops/All_HLAs/All_HLAs_Kmer_CSP_region_273-375_summarydata_length11.xlsx',
                          sheet_name='Alleles&Sequences', index_col=0).dropna()
 
 

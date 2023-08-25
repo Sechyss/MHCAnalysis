@@ -11,7 +11,6 @@ def add_labels(x, z, axis):  # Add labels to the plot later
         axis.text(element, z[element], z[element], ha='center', fontweight='bold', color='black', fontsize=5)
 
 
-
 # %% List of TopABC but only the top 2, in case you want to filter them without repeating analysis
 list_topABC_2 = [
     'HLA-A*01:01',
@@ -202,3 +201,37 @@ plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
 plt.show()
 
 # %% Preparing the different HLAs prevalence in different populations
+
+EndemicMalaria = ['Ghana Ga-Adangbe', 'Kenya Nyanza Province Luo tribe',
+                  'Kenya Nandi', 'Zimbabwe Harare Shona', 'Mali Bandiagara',
+                  'Papua New Guinea Karimui Plateau Pawaia', 'Papua New Guinea Madang',
+                  'India Khandesh Region Pawra']
+EpidemicMalaria = ['China Guizhou Province Shui', 'Georgia Tibilisi', 'Iran Gorgan', 'Philippines Ivatan']
+MalariaFree = ['England North West', 'Finland', 'Ireland South', 'New Caledonia', 'Greece pop 6',
+               'Morocco Nador Metalsa pop 2']
+
+
+def extraction_of_hla_presence(list_of_countries):
+    export_dictionary = {}
+    emptydict = {}
+
+    for countries in list_of_countries:
+        list_of_HLAs = Table[countries].tolist()
+        for HLAs in list_of_HLAs:
+            if HLAs in emptydict.keys():
+                emptydict[HLAs].append(countries)
+            else:
+                emptydict.update({HLAs: [countries]})
+
+    for item in emptydict:
+        export_dictionary.update({item: len(emptydict[item])})
+
+    return export_dictionary
+
+
+dataset_endemic = extraction_of_hla_presence(MalariaFree)
+
+palette_color = sns.color_palette('bright')
+
+plt.pie(dataset_endemic.values(), labels=dataset_endemic.keys(), colors=palette_color)
+plt.show()

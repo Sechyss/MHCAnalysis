@@ -6,7 +6,7 @@ from tqdm import tqdm
 # Import of data and filtering based on rank
 
 mhc_run = pd.read_table('/Users/u2176312/OneDrive - University of '
-                        'Warwick/CSP/AllelePops/Filtered_HLAs_all_all_lenght_corrected.txt', sep='\t')
+                        'Warwick/CSP/AllelePops/All_HLAs/Filtered_HLAs_all_lenght11_kmers_corrected.txt', sep='\t')
 temp_file = open('/Users/u2176312/OneDrive - University of '
                  'Warwick/CSP/AllelePops/Kmer_CSP_region_273-375_aa.fasta_dict.pickle', 'rb')
 mhc_run_dict = pickle.load(temp_file)
@@ -45,7 +45,7 @@ for allele in tqdm(successful_alleles):
 
 final_df = pd.DataFrame.from_dict(final_dict, orient='index', columns=['Variants'])
 
-#%%
+# %%
 newdata = {col: [] * len(final_df) for col in successful_alleles}
 new_df = pd.DataFrame(newdata)
 
@@ -66,7 +66,7 @@ for key1 in tqdm(dict_ids.keys()):
 
 # %%
 dict_tosave = {}
-for allele in successful_alleles:
+for allele in tqdm(successful_alleles):
     filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]
     redefined_df = filtered_df.sort_values(by=['seq_num'])
     for index, row in redefined_df.iterrows():
@@ -79,15 +79,16 @@ for allele in successful_alleles:
 sheet2 = pd.DataFrame.from_dict(dict_tosave, orient='index')
 sheet2 = sheet2.transpose()
 
-writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/Kmer_CSP_region_283-307_summarydata.xlsx',
+writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/All_HLAs/'
+                        'All_HLAs_Kmer_CSP_region_273-375_summarydata_length11.xlsx',
                         engine='openpyxl')
 final_df.to_excel(writer, sheet_name='summarydata')
 sheet2.to_excel(writer, sheet_name='Alleles&Sequences')
 writer.close()
 
-with open('/Users/u2176312/OneDrive - University of Warwick/CSP/Allele_seq_ids.pickle', 'wb') as f:
+with open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/All_HLAs/'
+          'All_Allele_seq_ids_273-375_region_RTSS_length11.pickle', 'wb') as f:
     pickle.dump(dict_tosave, f)
-
 
 # %% Dictionary of the NCBI sequences and kmers
 ncbi_prediction = pd.read_table('/Users/u2176312/OneDrive - University of '
@@ -119,7 +120,6 @@ for key in ncbi_dict.keys():
     final_dict.update({kmerid: number_of_sequences})
     kmer_start += 1
     kmer_end += 1
-
 
 temp_dict = {}
 for allele in successful_alleles:
