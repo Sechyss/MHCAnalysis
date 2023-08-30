@@ -41,13 +41,17 @@ filtered_4 = blastp_table_4[blastp_table_4[2] >= 70]
 list4_of_matching_human_blast = set(filtered_4[0].tolist())
 list4_of_matching_malaria_blast = set(filtered_4[1].tolist())
 columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatches', 'gap opens',
-                      'q. start', 'q. end', 's. start', 's. end', 'evalue', 'bit score']
+           'q. start', 'q. end', 's. start', 's. end', 'evalue', 'bit score']
 filtered_4.columns = columns
 
 # %%
 
 tempfile = open('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/NCBI_CSP_peptides_11kmer.pickle', 'rb')
 dictionary = pickle.load(tempfile)
+
+Table = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
+                      'NCBI_CSP/NCBI_Pf3D7_blastp.tsv', sep='\t', header=None)
+Table.columns = columns
 
 fastafile = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/'
                         'CSP/NCBI_CSP/NCBI_CSP_peptides_11kmer_filtered.fasta', 'fasta')
@@ -60,7 +64,7 @@ for seq_record in fastafile:
 
 kmer_list = {}
 dictionary_lengths = {}
-for item in list4_of_matching_malaria_blast:
+for item in dictionary_index.keys():
     list_ncbi_sequences = dictionary_index[item]
     empty_list = []
     for sequence in list_ncbi_sequences:
@@ -72,10 +76,21 @@ for item in list4_of_matching_malaria_blast:
 
 filtered_4['Kmer position'] = np.nan
 filtered_4['Number of NCBI sequences'] = np.nan
+
+Table['Kmer position'] = np.nan
+Table['Number of NCBI sequences'] = np.nan
+
 for index, row in filtered_4.iterrows():
     key_to_dict = row['subject id']
     filtered_4['Kmer position'][index] = kmer_list[key_to_dict]
     filtered_4['Number of NCBI sequences'][index] = dictionary_lengths[key_to_dict]
 
-filtered_4.to_csv('/Users/u2176312/OneDrive - University of Warwick/'
-                  'CSP/Humanrecogn/Blastp_NCBI_benign_location.csv')
+for index, row in Table.iterrows():
+    key_to_dict = row['subject id']
+    Table['Kmer position'][index] = kmer_list[key_to_dict]
+    Table['Number of NCBI sequences'][index] = dictionary_lengths[key_to_dict]
+# filtered_4.to_csv('/Users/u2176312/OneDrive - University of Warwick/'
+#                  'CSP/Humanrecogn/Blastp_NCBI_benign_location.csv')
+
+Table.to_csv('/Users/u2176312/OneDrive - University of Warwick/'
+             'CSP/Netchop/Blastp_NCBI_Pf3D7.csv')
