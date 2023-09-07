@@ -44,6 +44,8 @@ columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatch
            'q. start', 'q. end', 's. start', 's. end', 'evalue', 'bit score']
 filtered_4.columns = columns
 
+filtered_4.to_csv('/Users/u2176312/OneDrive - University of Warwick/'
+                  'CSP/Humanrecogn/Blastp_NCBI_Human_seqs.csv')
 # %%
 
 tempfile = open('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/NCBI_CSP_peptides_11kmer.pickle', 'rb')
