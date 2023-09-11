@@ -1,76 +1,99 @@
-import pandas as pd
-from Bio import SeqIO
+# Import necessary libraries
+import pandas as pd  # Pandas library for data manipulation
+from tqdm import tqdm
 
+# Define column names for the blastp result table
 columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatches', 'gap opens',
            'q. start', 'q. end', 's. start', 's. end', 'evalue', 'bit score']
-Table_blastp = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                             'NCBI_CSP/NCBI_Pf3D7_blastp.tsv', sep='\t', header=None)
-Table_blastp.columns = columns
-Table_blastp = Table_blastp[Table_blastp['% identity'] >= 80]  # Filter to 80% identity
 
-Table_blastp['subject id'] = Table_blastp['subject id'].apply(lambda x: int(str(x).replace('Sequence_', '')) + 1)
-Highpercentage = list(set(Table_blastp['subject id'].tolist()))
+#  Blastp result table related to human recognition only focusing those not similar to human peptides
+Blastp_human_recognition = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
+                                         'CSP/Humanrecogn/Human_Malaria_NCBI_blastp.tsv', header=None)
+Blastp_human_recognition.columns = columns
+Blastp_human_recognition = Blastp_human_recognition[Blastp_human_recognition['% identity'] <= 80]
+# Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
+Blastp_human_recognition['subject id'] = Blastp_human_recognition['subject id'].apply(
+    lambda x: int(str(x).replace('Sequence_', '')) + 1)
+NonHumanKmers = list(set(Blastp_human_recognition['subject id']))
+
+# Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
                           'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
                           'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
-Table_mhc = Table_mhc[Table_mhc['seq_num'].isin(Highpercentage)]  # Filter only those sequences with matches in humans
+Table_mhc = Table_mhc[Table_mhc['seq_num'].isin(NonHumanKmers)]
 
+# Create a dictionary to store MHC data for each 'seq_num'
 mhc_dict = {}
 for index, row in Table_mhc.iterrows():
     if row['seq_num'] not in mhc_dict.keys():
-        mhc_dict.update({row['seq_num']: [row['allele']]})
+        mhc_dict.update({row['seq_num']: [[row['allele']], [row['start']], [row['end']],
+                                          [row['peptide']], [str(row['peptide'])[-1]]]})
     else:
-        mhc_dict[row['seq_num']].append(row['allele'])
+        mhc_dict[row['seq_num']][0].append(row['allele'])
+        mhc_dict[row['seq_num']][1].append(row['start'])
+        mhc_dict[row['seq_num']][2].append(row['end'])
+        mhc_dict[row['seq_num']][3].append(row['peptide'])
+        mhc_dict[row['seq_num']][4].append(str(row['peptide'])[-1])
 
+# Remove duplicate values within the MHC data lists
 for key in mhc_dict.keys():
-    new_data = list(set(mhc_dict[key]))
-    mhc_dict[key] = new_data
+    new_data = list(set(mhc_dict[key][0]))
+    mhc_dict[key][0] = new_data
 
-sequence = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
-                       'NCBI_CSP_peptides_11kmer_filtered.fasta', 'fasta')
+# Read blastp result table from a TSV file into a Pandas DataFrame
+Table_blastp_Pf3D7 = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
+                                   'NCBI_CSP/NCBI_Pf3D7_blastp.tsv', sep='\t', header=None)
+Table_blastp_Pf3D7.columns = columns  # Assign column names
 
-dict_seq_C_terminal = {}
+# Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
+Table_blastp_Pf3D7['subject id'] = Table_blastp_Pf3D7['subject id'].apply(
+    lambda x: int(str(x).replace('Sequence_', '')) + 1)
 
-for seq_record in sequence:
-    cterminal = str(seq_record.seq)[-1]
-    sequenceID = int(str(seq_record.id).replace('Sequence_', ''))+1
-    dict_seq_C_terminal.update({sequenceID: cterminal})
+Table_blastp_Pf3D7 = Table_blastp_Pf3D7[Table_blastp_Pf3D7['subject id'].isin(NonHumanKmers)]
+Table_blastp_Pf3D7 = Table_blastp_Pf3D7.drop(['query id'], axis=1)
 
-
+# Read Netchop result table from a CSV file
 NetchopTable = pd.read_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/Netchop/result_CSP_Pf3D7_netchop.csv')
-NetchopTable = NetchopTable[NetchopTable['prediction_score'] >= 0.5]  # Filter cuts with < 0.5 hits
+NetchopTable = NetchopTable[NetchopTable['prediction_score'] >= 0.5]  # Filter rows with prediction score >= 0.5
 
+# Create a dictionary to store Netchop data for each '#'
 netchop_dict = {}
 for index, row in NetchopTable.iterrows():
     netchop_dict.update({row['#']: row['amino_acid']})
 
-Table_blastp_Pf3D7 = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                                   'NCBI_CSP/NCBI_Pf3D7_blastp.tsv', sep='\t', header=None)
-Table_blastp_Pf3D7.columns = columns
-Table_blastp_Pf3D7 = Table_blastp_Pf3D7[Table_blastp_Pf3D7['% identity'] >= 80]
-Table_blastp_Pf3D7['subject id'] = Table_blastp_Pf3D7['subject id'].apply(lambda x: int(str(x).replace('Sequence_', '')) + 1)
-Table_blastp_Pf3D7 = Table_blastp_Pf3D7[Table_blastp_Pf3D7['subject id'].isin(Highpercentage)]
+# %% Collection of data from the dictionary for MHC data
+collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Peptide', 'C-terminal aa'])
 
+for key in tqdm(mhc_dict.keys()):
+    for element in range(len(mhc_dict[key][0])):
+        row_to_add = pd.DataFrame({'Sequence': key,
+                                   'Allele': mhc_dict[key][0][element],
+                                   'Starting aa': mhc_dict[key][1][element],
+                                   'Ending aa': mhc_dict[key][2][element],
+                                   'Peptide': mhc_dict[key][3][element],
+                                   'C-terminal aa': mhc_dict[key][4][element]}, index=[0])
+        collectordf = pd.concat([row_to_add, collectordf.loc[:]]).reset_index(drop=True)
 
-Table_blastp_Pf3D7['Absolute start'] = ''
-Table_blastp_Pf3D7['Absolute end'] = ''
-Table_blastp_Pf3D7['HLA recognition'] = ''
-Table_blastp_Pf3D7['C terminal chop'] = ''
-for index, row in Table_blastp_Pf3D7.iterrows():
-    Table_blastp_Pf3D7.at[index, 'Absolute start'] = int(row['q. start']) - (int(row['s. start']) - 1)
-    Table_blastp_Pf3D7.at[index, 'Absolute end'] = int(row['q. end']) + (11 - int(row['s. end']))
-    if row['subject id'] in mhc_dict.keys():
-        Table_blastp_Pf3D7.at[index, 'HLA recognition'] = mhc_dict[row['subject id']]
+# %% Preparation of the final dataframe which contains all the relevant data
+
+final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('subject id'), how='inner')
+final_df = final_df.drop(['alignment length', 'bit score', 'gap opens', 'evalue'], axis=1)
+
+final_df['Absolute end (MHC peptide)'] = ''
+final_df['C-terminal match'] = ''
+for index, row in final_df.iterrows():
+    end_MHC_peptide = row['Ending aa']
+    end_blastpPf3D7 = row['s. end']
+    absolute_end = row['q. end'] - (end_blastpPf3D7 - end_MHC_peptide)
+    final_df.at[index, 'Absolute end (MHC peptide)'] = absolute_end
+    if absolute_end in netchop_dict.keys():
+        C_value = netchop_dict[absolute_end]
+        if C_value == row['C-terminal aa']:
+            final_df.at[index, 'C-terminal match'] = 1
+        else:
+            final_df.at[index, 'C-terminal match'] = 0
     else:
-        Table_blastp_Pf3D7.at[index, 'HLA recognition'] = 'Not recognise by TopABC-3'
-    if (Table_blastp_Pf3D7.at[index, 'Absolute end'] in netchop_dict.keys() and
-            (netchop_dict[Table_blastp_Pf3D7.at[index, 'Absolute end']] == dict_seq_C_terminal[row['subject id']])):
-        Table_blastp_Pf3D7.at[index, 'C terminal chop'] = netchop_dict[Table_blastp_Pf3D7.at[index, 'Absolute end']]
-    else:
-        Table_blastp_Pf3D7.at[index, 'C terminal chop'] = 'No'
+        final_df.at[index, 'C-terminal match'] = 'No Netchop at Absolute end position'
 
-FinalTable = Table_blastp_Pf3D7.copy()
-FinalTable = FinalTable.drop(columns=['query id', 'bit score', 'evalue'])
-
-# FinalTable.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
-#                  'Cterminalmatches_location.csv')
+# final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
+#                'Cterminalmatches_location.csv', index_label='Sequence number')
