@@ -1,7 +1,8 @@
 # Import necessary libraries
 import pandas as pd  # Pandas library for data manipulation
 import pickle
-from dna_features_viewer import GraphicFeature, GraphicRecord
+
+from matplotlib import pyplot as plt
 from tqdm import tqdm
 
 # Define column names for the blastp result table
@@ -64,6 +65,7 @@ for index, row in NetchopTable.iterrows():
 # %% Collection of data from the dictionary for MHC data
 collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Peptide', 'C-terminal aa'])
 
+print('Analyzing the sequences in the dictionary mhc data')
 for key in tqdm(mhc_dict.keys()):
     for element in range(len(mhc_dict[key][0])):
         row_to_add = pd.DataFrame({'Sequence': key,
@@ -107,32 +109,71 @@ final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
 # %% Plotting of the results
 final_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 1)]
 
-tempfile = open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_alleles.pickle',
-                'rb')
-dictionaryHLA_countries = pickle.load(tempfile)
+Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
+                      sheet_name='TOP_ABC')
+
+result_dict = Table.to_dict(orient='dict')
 
 # Features includes the name of the sequence, the length of the sequence, the number of elements...
-features = [GraphicFeature(start=1, end=18, color="olivedrab", label='Signal'),
-            GraphicFeature(start=93, end=97, color="brown", label='Region I'),
-            GraphicFeature(start=105, end=272, color="skyblue", label='Tandem repeats'),
-            GraphicFeature(start=326, end=342, color="crimson", label='Th2R region'),
-            GraphicFeature(start=366, end=380, color='green', label='Th3R region'),
-            GraphicFeature(start=375, end=397, color="purple", label='GPI-anchor')]
 
-for country in dictionaryHLA_countries.keys():
+list_countries = [x for x in result_dict.keys()]
+color_codes = [
+    '#E69F00',
+    '#56B4E9',
+    '#009E73',
+    '#F0E442',
+    '#0072B2',
+    '#D55E00',
+    '#CC79A7',
+    '#88CCEE',
+    '#CC6677',
+    '#DDCC77',
+    '#117733',
+    '#332288',
+    '#AA4499',
+    '#44AA99',
+    '#999933',
+    '#882255',
+    '#661100',
+    '#6699CC',
+    '#888888',
+]
+color_dictionary = dict(zip(list_countries, color_codes))
+
+print('Generating the figures for the different countries')
+for country in tqdm(result_dict.keys()):
+    x_axis = []
+    number_variants = []
+    hla_recognition = []
     startingkmer = 0
-    endingKmer = 0
-    listHLAs = dictionaryHLA_countries[country]
-    listHLAs = ['HLA-'+str(x) for x in listHLAs]
+    endingkmer = 0
+    listHLAs = list(result_dict[country].values())
     countryDF = final_df[final_df['Allele'].isin(listHLAs)].sort_values(by=['q. start'], ascending=True)
     for index, row in countryDF.iterrows():
-        if row['q. start'] > endingKmer:
+        if row['q. start'] > endingkmer:
             startingkmer = row['q. start']
-            endingKmer = startingkmer + 11
+            endingkmer = startingkmer + 11
+            x_axis.append('Kmer_'+str(startingkmer)+'_'+str(endingkmer))
             tempdf = countryDF[(countryDF['q. start'] >= startingkmer) &
-                               (countryDF['Absolute end (MHC peptide)'] <= endingKmer)]
-            alleles = list(set(tempdf['Allele'].to_list))
-            features.append(GraphicFeature(start=startingkmer, end=endingKmer, color='grey', label=str(len(alleles))))
+                               (countryDF['Absolute end (MHC peptide)'] <= endingkmer)]
+            alleles = list(set(tempdf['Allele'].to_list()))
+            hla_recognition.append(len(alleles))
+            tempdf2 = final_df[(final_df['q. start'] >= startingkmer) &
+                               (final_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['q. start'],
+                                                                                                   ascending=True)
+            sequences = list(set(tempdf.index.to_list()))
+            number_variants.append(len(sequences))
+        else:
+            continue
 
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(25, 20), sharex=True)
+    # Creation of the plot with the different populations
+    ax1.bar(x=x_axis, height=number_variants, edgecolor='black', color='white')
+    ax1.set_title('Number of variants', loc='left', y=1, weight='bold', fontsize=30)
+    ax2.bar(x=x_axis, height=hla_recognition, edgecolor='black', color=color_dictionary[country])
+    ax2.set_title(country + ' number of HLAs that recognise peptide', loc='left', y=1, weight='bold', fontsize=30)
 
+    plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
+    plt.tight_layout()
+    plt.show()
