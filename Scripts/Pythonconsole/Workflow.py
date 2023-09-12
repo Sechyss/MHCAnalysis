@@ -1,5 +1,7 @@
 # Import necessary libraries
 import pandas as pd  # Pandas library for data manipulation
+import pickle
+from dna_features_viewer import GraphicFeature, GraphicRecord
 from tqdm import tqdm
 
 # Define column names for the blastp result table
@@ -10,17 +12,16 @@ columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatch
 Blastp_human_recognition = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
                                          'CSP/Humanrecogn/Human_Malaria_NCBI_blastp.tsv', header=None)
 Blastp_human_recognition.columns = columns
-Blastp_human_recognition = Blastp_human_recognition[Blastp_human_recognition['% identity'] <= 80]
+Blastp_human_recognition = Blastp_human_recognition[Blastp_human_recognition['% identity'] >= 80]
 # Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
 Blastp_human_recognition['subject id'] = Blastp_human_recognition['subject id'].apply(
     lambda x: int(str(x).replace('Sequence_', '')) + 1)
-NonHumanKmers = list(set(Blastp_human_recognition['subject id']))
+HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
                           'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
                           'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
-Table_mhc = Table_mhc[Table_mhc['seq_num'].isin(NonHumanKmers)]
 
 # Create a dictionary to store MHC data for each 'seq_num'
 mhc_dict = {}
@@ -49,7 +50,6 @@ Table_blastp_Pf3D7.columns = columns  # Assign column names
 Table_blastp_Pf3D7['subject id'] = Table_blastp_Pf3D7['subject id'].apply(
     lambda x: int(str(x).replace('Sequence_', '')) + 1)
 
-Table_blastp_Pf3D7 = Table_blastp_Pf3D7[Table_blastp_Pf3D7['subject id'].isin(NonHumanKmers)]
 Table_blastp_Pf3D7 = Table_blastp_Pf3D7.drop(['query id'], axis=1)
 
 # Read Netchop result table from a CSV file
@@ -79,6 +79,7 @@ for key in tqdm(mhc_dict.keys()):
 final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('subject id'), how='inner')
 final_df = final_df.drop(['alignment length', 'bit score', 'gap opens', 'evalue'], axis=1)
 
+final_df['Human peptide recognition'] = ''
 final_df['Absolute end (MHC peptide)'] = ''
 final_df['C-terminal match'] = ''
 for index, row in final_df.iterrows():
@@ -95,5 +96,43 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'C-terminal match'] = 'No Netchop at Absolute end position'
 
-# final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
-#                'Cterminalmatches_location.csv', index_label='Sequence number')
+    if index in HumanKmers:
+        final_df.at[index, 'Human peptide recognition'] = 1
+    else:
+        final_df.at[index, 'Human peptide recognition'] = 0
+
+final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
+                'Cterminalmatches_location.csv', index_label='Sequence number')
+
+# %% Plotting of the results
+final_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 1)]
+
+tempfile = open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_alleles.pickle',
+                'rb')
+dictionaryHLA_countries = pickle.load(tempfile)
+
+# Features includes the name of the sequence, the length of the sequence, the number of elements...
+features = [GraphicFeature(start=1, end=18, color="olivedrab", label='Signal'),
+            GraphicFeature(start=93, end=97, color="brown", label='Region I'),
+            GraphicFeature(start=105, end=272, color="skyblue", label='Tandem repeats'),
+            GraphicFeature(start=326, end=342, color="crimson", label='Th2R region'),
+            GraphicFeature(start=366, end=380, color='green', label='Th3R region'),
+            GraphicFeature(start=375, end=397, color="purple", label='GPI-anchor')]
+
+for country in dictionaryHLA_countries.keys():
+    startingkmer = 0
+    endingKmer = 0
+    listHLAs = dictionaryHLA_countries[country]
+    listHLAs = ['HLA-'+str(x) for x in listHLAs]
+    countryDF = final_df[final_df['Allele'].isin(listHLAs)].sort_values(by=['q. start'], ascending=True)
+    for index, row in countryDF.iterrows():
+        if row['q. start'] > endingKmer:
+            startingkmer = row['q. start']
+            endingKmer = startingkmer + 11
+            tempdf = countryDF[(countryDF['q. start'] >= startingkmer) &
+                               (countryDF['Absolute end (MHC peptide)'] <= endingKmer)]
+            alleles = list(set(tempdf['Allele'].to_list))
+            features.append(GraphicFeature(start=startingkmer, end=endingKmer, color='grey', label=str(len(alleles))))
+
+
+
