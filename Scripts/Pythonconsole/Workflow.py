@@ -1,6 +1,5 @@
 # Import necessary libraries
 import pandas as pd  # Pandas library for data manipulation
-import pickle
 
 from matplotlib import pyplot as plt
 from tqdm import tqdm
@@ -171,9 +170,9 @@ for country in tqdm(result_dict.keys()):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(25, 20), sharex=True)
     # Creation of the plot with the different populations
     ax1.bar(x=x_axis, height=number_variants, edgecolor='black', color='white')
-    ax1.set_title('Number of variants', loc='left', y=1, weight='bold', fontsize=30)
+    ax1.set_title('Number of sequences', loc='left', y=1, weight='bold', fontsize=30)
     ax2.bar(x=x_axis, height=hla_recognition, edgecolor='black', color=color_dictionary[country])
-    ax2.set_title(country + ' number of HLAs that recognise peptide', loc='left', y=1, weight='bold', fontsize=30)
+    ax2.set_title(country + ' number of HLAs that recognise peptides', loc='left', y=1, weight='bold', fontsize=30)
 
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
@@ -182,5 +181,5 @@ for country in tqdm(result_dict.keys()):
                 'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
     plt.show()
 
-new_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow'
+new_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
               'SummaryTable.csv')
