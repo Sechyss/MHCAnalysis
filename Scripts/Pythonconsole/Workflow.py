@@ -103,7 +103,7 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
 
-final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
+final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
                 'Cterminalmatches_location.csv', index_label='Sequence number')
 
 # %% Plotting of the results
@@ -140,32 +140,34 @@ color_codes = [
 ]
 color_dictionary = dict(zip(list_countries, color_codes))
 
+new_df = pd.DataFrame()
 print('Generating the figures for the different countries')
 for country in tqdm(result_dict.keys()):
     x_axis = []
     number_variants = []
     hla_recognition = []
-    startingkmer = 0
-    endingkmer = 0
+
     listHLAs = list(result_dict[country].values())
     countryDF = final_df[final_df['Allele'].isin(listHLAs)].sort_values(by=['q. start'], ascending=True)
-    for index, row in countryDF.iterrows():
-        if row['q. start'] > endingkmer:
-            startingkmer = row['q. start']
-            endingkmer = startingkmer + 11
-            x_axis.append('Kmer_'+str(startingkmer)+'_'+str(endingkmer))
-            tempdf = countryDF[(countryDF['q. start'] >= startingkmer) &
-                               (countryDF['Absolute end (MHC peptide)'] <= endingkmer)]
-            alleles = list(set(tempdf['Allele'].to_list()))
-            hla_recognition.append(len(alleles))
-            tempdf2 = final_df[(final_df['q. start'] >= startingkmer) &
-                               (final_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['q. start'],
-                                                                                                   ascending=True)
-            sequences = list(set(tempdf.index.to_list()))
-            number_variants.append(len(sequences))
-        else:
-            continue
+    startingkmer = final_df['q. start'].min()
+    endingkmer = startingkmer + 11
+    while endingkmer <= final_df['Absolute end (MHC peptide)'].max():
+        x_axis.append('Kmer_'+str(startingkmer)+'_'+str(endingkmer))
+        tempdf = countryDF[(countryDF['q. start'] >= startingkmer) &
+                           (countryDF['Absolute end (MHC peptide)'] <= endingkmer)]
+        alleles = list(set(tempdf['Allele'].to_list()))
+        hla_recognition.append(len(alleles))
+        tempdf2 = final_df[(final_df['q. start'] >= startingkmer) &
+                           (final_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['q. start'],
+                                                                                               ascending=True)
+        sequences = list(set(tempdf2.index.to_list()))
+        number_variants.append(len(sequences))
 
+        startingkmer += 1
+        endingkmer += 1
+    new_df.index = x_axis
+    new_df['Sequences'] = number_variants
+    new_df[country] = hla_recognition
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(25, 20), sharex=True)
     # Creation of the plot with the different populations
     ax1.bar(x=x_axis, height=number_variants, edgecolor='black', color='white')
@@ -176,4 +178,9 @@ for country in tqdm(result_dict.keys()):
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
     plt.tight_layout()
+    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+                'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
     plt.show()
+
+new_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow'
+              'SummaryTable.csv')
