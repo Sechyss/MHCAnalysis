@@ -106,14 +106,19 @@ final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/A
                 'Cterminalmatches_location.csv', index_label='Sequence number')
 
 # %% Plotting of the results
-final_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 1)]
+final_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 0)]
+
+Table_blastp_Pf3D7['Absolute start'] = ''
+Table_blastp_Pf3D7['Absolute end'] = ''
+
+for index, row in Table_blastp_Pf3D7.iterrows():
+    Table_blastp_Pf3D7.at[index, 'Absolute start'] = row['q. start'] - (row['s. start'] - 1)
+    Table_blastp_Pf3D7.at[index, 'Absolute end'] = row['q. end'] - (row['s. end'] - 11)
 
 Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
                       sheet_name='TOP_ABC')
 
 result_dict = Table.to_dict(orient='dict')
-
-# Features includes the name of the sequence, the length of the sequence, the number of elements...
 
 list_countries = [x for x in result_dict.keys()]
 color_codes = [
@@ -140,21 +145,25 @@ color_codes = [
 color_dictionary = dict(zip(list_countries, color_codes))
 
 new_df = pd.DataFrame()
+new_df2 = pd.DataFrame()
 print('Generating the figures for the different countries')
 for country in tqdm(result_dict.keys()):
     x_axis = []
     number_variants = []
     hla_recognition = []
+    sequences_recognition = []
+    number_variations = []
 
     listHLAs = list(result_dict[country].values())
     countryDF = final_df[final_df['Allele'].isin(listHLAs)].sort_values(by=['q. start'], ascending=True)
     startingkmer = final_df['q. start'].min()
     endingkmer = startingkmer + 11
     while endingkmer <= final_df['Absolute end (MHC peptide)'].max():
-        x_axis.append('Kmer_'+str(startingkmer)+'_'+str(endingkmer))
+        x_axis.append('Kmer_' + str(startingkmer) + '_' + str(endingkmer))
         tempdf = countryDF[(countryDF['q. start'] >= startingkmer) &
                            (countryDF['Absolute end (MHC peptide)'] <= endingkmer)]
         alleles = list(set(tempdf['Allele'].to_list()))
+        sequences_country = list(set(tempdf.index.to_list()))
         hla_recognition.append(len(alleles))
         tempdf2 = final_df[(final_df['q. start'] >= startingkmer) &
                            (final_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['q. start'],
@@ -162,17 +171,27 @@ for country in tqdm(result_dict.keys()):
         sequences = list(set(tempdf2.index.to_list()))
         number_variants.append(len(sequences))
 
+        tempdf3 = Table_blastp_Pf3D7[(Table_blastp_Pf3D7['Absolute start'] >= startingkmer) &
+                                     (Table_blastp_Pf3D7['Absolute end'] <= endingkmer)]
+        variations = list(set(tempdf3['subject id'].to_list()))
+        variations = list(set(variations).union(set(sequences)))
+        sequences_recognition.append(len(sequences_country))
+        number_variations.append(len(variations))
+
         startingkmer += 1
         endingkmer += 1
     new_df.index = x_axis
-    new_df['Sequences'] = number_variants
+    new_df2.index = x_axis
+    new_df['Sequences with C-terminal / NonHuman'] = number_variants
+    new_df2['Total variations'] = number_variations
     new_df[country] = hla_recognition
+    new_df2[country] = sequences_recognition
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(25, 20), sharex=True)
     # Creation of the plot with the different populations
-    ax1.bar(x=x_axis, height=number_variants, edgecolor='black', color='white')
-    ax1.set_title('Number of sequences', loc='left', y=1, weight='bold', fontsize=30)
-    ax2.bar(x=x_axis, height=hla_recognition, edgecolor='black', color=color_dictionary[country])
-    ax2.set_title(country + ' number of HLAs that recognise peptides', loc='left', y=1, weight='bold', fontsize=30)
+    ax1.bar(x=x_axis, height=number_variations, edgecolor='black', color='white')
+    ax1.set_title('Number of variations per Kmer', loc='left', y=1, weight='bold', fontsize=30)
+    ax2.bar(x=x_axis, height=sequences_recognition, edgecolor='black', color=color_dictionary[country])
+    ax2.set_title(country + ' number of variants recognised by HLAs', loc='left', y=1, weight='bold', fontsize=30)
 
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
@@ -181,5 +200,10 @@ for country in tqdm(result_dict.keys()):
                 'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
     plt.show()
 
-new_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-              'SummaryTable.csv')
+
+writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+                        'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
+new_df.to_excel(writer, sheet_name='HLA numbers')
+new_df2.to_excel(writer, sheet_name='RelativeFreq')
+
+writer.close()
