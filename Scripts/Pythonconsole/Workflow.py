@@ -90,6 +90,7 @@ for key in tqdm(mhc_dict.keys()):
 # %% Preparation of the final dataframe which contains all the relevant data
 
 final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('query id'), how='inner')
+final_df.reset_index(inplace=True)
 
 final_df['Peptide of 11kmer-aa'] = ''
 final_df['Absolute end (MHC peptide)'] = ''
@@ -101,11 +102,11 @@ for index, row in final_df.iterrows():
     end_blastpPf3D7 = row['q. end']
     absolute_end = row['s. end'] - (end_blastpPf3D7 - end_MHC_peptide)
     final_df.at[index, 'Absolute end (MHC peptide)'] = absolute_end
-    if index in dictionary_human.keys():
-        final_df.at[index, '% identity with human peptidome'] = str(max(dictionary_human[index]))
+    if row['Sequence'] in dictionary_human.keys():
+        final_df.at[index, '% identity with human peptidome'] = str(max(dictionary_human[row['Sequence']]))
     else:
         final_df.at[index, '% identity with human peptidome'] = 0
-    final_df.at[index, 'Peptide of 11kmer-aa'] = str(dictionary_sequences[index])
+    final_df.at[index, 'Peptide of 11kmer-aa'] = str(dictionary_sequences[row['Sequence']])
     if absolute_end in netchop_dict.keys():
         C_value = netchop_dict[absolute_end]
         if C_value == row['C-terminal aa']:
@@ -121,7 +122,7 @@ for index, row in final_df.iterrows():
         final_df.at[index, 'Human peptide recognition'] = 0
 
 final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-                'Cterminalmatches_location.csv', index_label='Sequence number')
+                'Cterminalmatches_location.csv', index=False)
 
 # %% Plotting of the results
 Filtered_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 0)]
@@ -173,7 +174,7 @@ for country in tqdm(result_dict.keys()):
     number_variations = []
 
     listHLAs = list(result_dict[country].values())
-    countryDF = Filtered_df[Filtered_df['Allele'].isin(listHLAs)].sort_values(by=['q. start'], ascending=True)
+    countryDF = Filtered_df[Filtered_df['Allele'].isin(listHLAs)].sort_values(by=['s. start'], ascending=True)
     startingkmer = Filtered_df['s. start'].min()
     endingkmer = startingkmer + 11
     while endingkmer <= Filtered_df['Absolute end (MHC peptide)'].max():
@@ -181,12 +182,12 @@ for country in tqdm(result_dict.keys()):
         tempdf = countryDF[(countryDF['s. start'] >= startingkmer) &
                            (countryDF['Absolute end (MHC peptide)'] <= endingkmer)]
         alleles = list(set(tempdf['Allele'].to_list()))
-        sequences_country = list(set(tempdf.index.to_list()))
+        sequences_country = list(set(tempdf['Sequence'].to_list()))
         hla_recognition.append(len(alleles))
-        tempdf2 = Filtered_df[(Filtered_df['q. start'] >= startingkmer) &
-                              (Filtered_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['q. start'],
+        tempdf2 = Filtered_df[(Filtered_df['s. start'] >= startingkmer) &
+                              (Filtered_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['s. start'],
                                                                                                      ascending=True)
-        sequences = list(set(tempdf2.index.to_list()))
+        sequences = list(set(tempdf2['Sequence'].to_list()))
         number_variants.append(len(sequences))
 
         tempdf3 = Table_blastp_Pf3D7[(Table_blastp_Pf3D7['Absolute start'] >= startingkmer) &
@@ -216,7 +217,7 @@ for country in tqdm(result_dict.keys()):
     plt.tight_layout()
     plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
                 'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
-    plt.show()
+
 
 writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
                         'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
