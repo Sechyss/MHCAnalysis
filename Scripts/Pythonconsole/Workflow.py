@@ -89,7 +89,7 @@ for key in tqdm(mhc_dict.keys()):
 
 # %% Preparation of the final dataframe which contains all the relevant data
 
-final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('query id'), how='inner')
+final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('query id'), how='outer')
 final_df.reset_index(inplace=True)
 
 final_df['Peptide of 11kmer-aa'] = ''
@@ -116,7 +116,7 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'C-terminal match'] = 'No Netchop at Absolute end position'
 
-    if index in HumanKmers:
+    if row['Sequence'] in HumanKmers:
         final_df.at[index, 'Human peptide recognition'] = 1
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
