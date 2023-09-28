@@ -128,10 +128,12 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
 
-#final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-#                'Cterminalmatches_location.csv', index=False)
+final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+                'Cterminalmatches_location.csv', index=False)
 
 # %% Plotting of the results
+
+final_df.dropna(subset=['Absolute start'], inplace=True)
 Filtered_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 0)]
 
 Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
@@ -182,22 +184,23 @@ for country in tqdm(result_dict.keys()):
     number_alleles_full = len(set(countryDF['Sequence'].to_list()))
     number_variants_full = len(set(final_df['Sequence'].to_list()))
 
-    new_df3.at[0, country] = number_alleles_full
-    new_df3.at[1, country] = number_variants_full
+    new_df3.at['Number of variations recognised in total', country] = number_alleles_full
+    new_df3.at['Total number of possible variations', country] = number_variants_full
 
     while startingkmer <= final_df['Absolute start'].max():
-        x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))
-        tempdf = countryDF[countryDF['s. start'] == startingkmer]
-        alleles = list(set(tempdf['Allele'].to_list()))
-        sequences_country = list(set(tempdf['Sequence'].to_list()))
+        x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))  # Creation the kmer axis
+
+        tempdf = countryDF[countryDF['s. start'] == startingkmer]  # Filtering the country df to the kmer axis
+        alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
+        sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
         hla_recognition.append(len(alleles))
-        tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer].sort_values(by=['Absolute start'],
-                                                                                         ascending=True)
-        sequences = list(set(tempdf2['Sequence'].to_list()))
+
+        tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer]  # selection of the filtered df to kmer
+        sequences = set(tempdf2['Sequence'].to_list())
         number_variants.append(len(sequences))
 
         tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
-        variations = list(set(tempdf3['Sequence'].to_list()))
+        variations = set(tempdf3['Sequence'].to_list())
 
         sequences_recognition.append(len(sequences_country))
         number_variations.append(len(variations))
@@ -220,14 +223,14 @@ for country in tqdm(result_dict.keys()):
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
     plt.tight_layout()
-#    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-#                'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
+    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+                'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
 
     plt.show()
-#writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-#                        'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
-#new_df.to_excel(writer, sheet_name='HLA numbers')
-#new_df2.to_excel(writer, sheet_name='RelativeFreq')
-#new_d3.to_excel(writer, sheet_name='AbsoluteRecognition_Country')
+writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+                        'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
+new_df.to_excel(writer, sheet_name='HLA numbers')
+new_df2.to_excel(writer, sheet_name='RelativeFreq')
+new_df3.to_excel(writer, sheet_name='AbsoluteRecognition_Country')
 
-#writer.close()
+writer.close()
