@@ -16,7 +16,7 @@ rule MHC_prep_list:
 rule MHC_prediction:
     input:
         fastafile="../data/{sequence}.faa",
-        mhclength=rule.MHC_prep_list.output,
+        mhclength= rules.MHC_prep_list.output
 
     output:
         "../data/MHC_prediction_{sequence}.txt"

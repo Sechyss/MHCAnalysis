@@ -45,6 +45,13 @@ Table_blastp_Pf3D7 = pd.read_table('/Users/u2176312/OneDrive - University of War
 Table_blastp_Pf3D7.columns = columns  # Assign column names
 Table_blastp_Pf3D7 = Table_blastp_Pf3D7[Table_blastp_Pf3D7['s. start'] > 270]
 
+Table_blastp_Pf3D7['Absolute start'] = ''
+Table_blastp_Pf3D7['Absolute end'] = ''
+
+for index, row in Table_blastp_Pf3D7.iterrows():
+    Table_blastp_Pf3D7.at[index, 'Absolute start'] = row['s. start'] - (row['q. start'] - 1)
+    Table_blastp_Pf3D7.at[index, 'Absolute end'] = row['s. end'] - (row['q. end'] - 11)
+
 # Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
 Table_blastp_Pf3D7['query id'] = Table_blastp_Pf3D7['query id'].apply(
     lambda x: int(str(x).replace('Sequence_', '')) + 1)
@@ -121,18 +128,11 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
 
-final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-                'Cterminalmatches_location.csv', index=False)
+#final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+#                'Cterminalmatches_location.csv', index=False)
 
 # %% Plotting of the results
 Filtered_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 0)]
-
-Table_blastp_Pf3D7['Absolute start'] = ''
-Table_blastp_Pf3D7['Absolute end'] = ''
-
-for index, row in Table_blastp_Pf3D7.iterrows():
-    Table_blastp_Pf3D7.at[index, 'Absolute start'] = row['s. start'] - (row['q. start'] - 1)
-    Table_blastp_Pf3D7.at[index, 'Absolute end'] = row['s. end'] - (row['q. end'] - 11)
 
 Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
                       sheet_name='TOP_ABC')
@@ -165,6 +165,7 @@ color_dictionary = dict(zip(list_countries, color_codes))
 
 new_df = pd.DataFrame()
 new_df2 = pd.DataFrame()
+new_df3 = pd.DataFrame()
 print('Generating the figures for the different countries')
 for country in tqdm(result_dict.keys()):
     x_axis = []
@@ -174,26 +175,30 @@ for country in tqdm(result_dict.keys()):
     number_variations = []
 
     listHLAs = list(result_dict[country].values())
-    countryDF = Filtered_df[Filtered_df['Allele'].isin(listHLAs)].sort_values(by=['s. start'], ascending=True)
-    startingkmer = Filtered_df['s. start'].min()
+    countryDF = Filtered_df[Filtered_df['Allele'].isin(listHLAs)].sort_values(by=['Absolute start'], ascending=True)
+    startingkmer = final_df['Absolute start'].min()
     endingkmer = startingkmer + 11
-    while endingkmer <= Filtered_df['Absolute end (MHC peptide)'].max():
-        x_axis.append('Kmer_' + str(startingkmer) + '_' + str(endingkmer))
-        tempdf = countryDF[(countryDF['s. start'] >= startingkmer) &
-                           (countryDF['Absolute end (MHC peptide)'] <= endingkmer)]
+
+    number_alleles_full = len(set(countryDF['Sequence'].to_list()))
+    number_variants_full = len(set(final_df['Sequence'].to_list()))
+
+    new_df3.at[0, country] = number_alleles_full
+    new_df3.at[1, country] = number_variants_full
+
+    while startingkmer <= final_df['Absolute start'].max():
+        x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))
+        tempdf = countryDF[countryDF['s. start'] == startingkmer]
         alleles = list(set(tempdf['Allele'].to_list()))
         sequences_country = list(set(tempdf['Sequence'].to_list()))
         hla_recognition.append(len(alleles))
-        tempdf2 = Filtered_df[(Filtered_df['s. start'] >= startingkmer) &
-                              (Filtered_df['Absolute end (MHC peptide)'] <= endingkmer)].sort_values(by=['s. start'],
-                                                                                                     ascending=True)
+        tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer].sort_values(by=['Absolute start'],
+                                                                                         ascending=True)
         sequences = list(set(tempdf2['Sequence'].to_list()))
         number_variants.append(len(sequences))
 
-        tempdf3 = Table_blastp_Pf3D7[(Table_blastp_Pf3D7['Absolute start'] >= startingkmer) &
-                                     (Table_blastp_Pf3D7['Absolute end'] <= endingkmer)]
-        variations = list(set(tempdf3['query id'].to_list()))
-        variations = list(set(variations).union(set(sequences)))
+        tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
+        variations = list(set(tempdf3['Sequence'].to_list()))
+
         sequences_recognition.append(len(sequences_country))
         number_variations.append(len(variations))
 
@@ -215,13 +220,14 @@ for country in tqdm(result_dict.keys()):
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
     plt.tight_layout()
-    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-                'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
+#    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+#                'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
 
+    plt.show()
+#writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+#                        'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
+#new_df.to_excel(writer, sheet_name='HLA numbers')
+#new_df2.to_excel(writer, sheet_name='RelativeFreq')
+#new_d3.to_excel(writer, sheet_name='AbsoluteRecognition_Country')
 
-writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-                        'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
-new_df.to_excel(writer, sheet_name='HLA numbers')
-new_df2.to_excel(writer, sheet_name='RelativeFreq')
-
-writer.close()
+#writer.close()
