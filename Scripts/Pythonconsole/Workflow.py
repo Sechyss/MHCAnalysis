@@ -131,6 +131,8 @@ for index, row in final_df.iterrows():
 final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
                 'Cterminalmatches_location.csv', index=False)
 
+final_df.drop(range(1956, 1979), axis=0, inplace=True)  # Remove the His-Tag from one of the sequences
+
 # %% Plotting of the results
 
 final_df.dropna(subset=['Absolute start'], inplace=True)
