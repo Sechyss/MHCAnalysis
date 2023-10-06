@@ -61,12 +61,11 @@ Table_blastp_Pf3D7 = Table_blastp_Pf3D7.drop(['subject id', 'alignment length',
 
 # Read Netchop result table from a CSV file
 NetchopTable = pd.read_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/Netchop/result_CSP_Pf3D7_netchop.csv')
-NetchopTable = NetchopTable[NetchopTable['prediction_score'] >= 0.5]  # Filter rows with prediction score >= 0.5
 
 # Create a dictionary to store Netchop data for each '#'
 netchop_dict = {}
 for index, row in NetchopTable.iterrows():
-    netchop_dict.update({row['#']: row['amino_acid']})
+    netchop_dict.update({row['#']: [row['amino_acid'], row['prediction_score']]})
 
 # %% Creation of sequence dictionary
 
@@ -101,6 +100,7 @@ final_df.reset_index(inplace=True)
 
 final_df['Peptide of 11kmer-aa'] = ''
 final_df['Absolute end (MHC peptide)'] = ''
+final_df['Netchop prediction scores'] = ''
 final_df['C-terminal match'] = ''
 final_df['Human peptide recognition'] = ''
 final_df['% identity with human peptidome'] = ''
@@ -114,14 +114,18 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, '% identity with human peptidome'] = 0
     final_df.at[index, 'Peptide of 11kmer-aa'] = str(dictionary_sequences[row['Sequence']])
+
     if absolute_end in netchop_dict.keys():
-        C_value = netchop_dict[absolute_end]
-        if C_value == row['C-terminal aa']:
+        C_value = netchop_dict[absolute_end][0]
+        prediction_score = netchop_dict[absolute_end][1]
+        final_df.at[index, 'Netchop prediction scores'] = prediction_score
+        if (C_value == row['C-terminal aa']) & (prediction_score >= 0.5):
             final_df.at[index, 'C-terminal match'] = 1
         else:
             final_df.at[index, 'C-terminal match'] = 0
     else:
-        final_df.at[index, 'C-terminal match'] = 'No Netchop at Absolute end position'
+        final_df.at[index, 'C-terminal match'] = 'No MHC recognition'
+        final_df.at[index, 'Netchop prediction scores'] = 'No MHC recognition'
 
     if row['Sequence'] in HumanKmers:
         final_df.at[index, 'Human peptide recognition'] = 1
@@ -192,7 +196,7 @@ for country in tqdm(result_dict.keys()):
     while startingkmer <= final_df['Absolute start'].max():
         x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))  # Creation the kmer axis
 
-        tempdf = countryDF[countryDF['s. start'] == startingkmer]  # Filtering the country df to the kmer axis
+        tempdf = countryDF[countryDF['Absolute start'] == startingkmer]  # Filtering the country df to the kmer axis
         alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
         sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
         hla_recognition.append(len(alleles))
