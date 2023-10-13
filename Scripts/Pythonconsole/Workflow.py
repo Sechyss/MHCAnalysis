@@ -24,13 +24,13 @@ Blastp_human_recognition = Blastp_human_recognition[Blastp_human_recognition['% 
 HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
-Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                          'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
-                          'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
-
 # Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-#                          'NCBI_CSP/resultsPredictionBinding_NCBI_ALL/'
-#                          'Filtered_HLAs_all_all_lenght_NCBIkmers.txt', sep='\t')
+#                          'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
+#                          'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
+
+Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
+                          'NCBI_CSP/resultsPredictionBinding_NCBI_ALL/'
+                          'Filtered_HLAs_all_all_lenght_NCBIkmers.txt', sep='\t')
 
 # Create a dictionary to store MHC data for each 'seq_num'
 mhc_dict = {}
