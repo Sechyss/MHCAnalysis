@@ -1,4 +1,6 @@
 # Import necessary libraries
+# import pickle
+
 import pandas as pd  # Pandas library for data manipulation
 
 from matplotlib import pyplot as plt
@@ -25,6 +27,10 @@ HumanKmers = list(set(Blastp_human_recognition['subject id']))
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
                           'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
                           'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
+
+# Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
+#                          'NCBI_CSP/resultsPredictionBinding_NCBI_ALL/'
+#                          'Filtered_HLAs_all_all_lenght_NCBIkmers.txt', sep='\t')
 
 # Create a dictionary to store MHC data for each 'seq_num'
 mhc_dict = {}
@@ -67,7 +73,7 @@ netchop_dict = {}
 for index, row in NetchopTable.iterrows():
     netchop_dict.update({row['#']: [row['amino_acid'], row['prediction_score']]})
 
-# %% Creation of sequence dictionary
+# Creation of sequence dictionary
 
 fastafile = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
                         'NCBI_CSP_peptides_11kmer_filtered.fasta', 'fasta')
@@ -93,7 +99,7 @@ for key in tqdm(mhc_dict.keys()):
                                    'C-terminal aa': mhc_dict[key][4][element]}, index=[0])
         collectordf = pd.concat([row_to_add, collectordf.loc[:]]).reset_index(drop=True)
 
-# %% Preparation of the final dataframe which contains all the relevant data
+# Preparation of the final dataframe which contains all the relevant data
 
 final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('query id'), how='outer')
 final_df.reset_index(inplace=True)
@@ -110,7 +116,7 @@ for index, row in final_df.iterrows():
     absolute_end = row['s. end'] - (end_blastpPf3D7 - end_MHC_peptide)
     final_df.at[index, 'Absolute end (MHC peptide)'] = absolute_end
     if row['Sequence'] in dictionary_human.keys():
-        final_df.at[index, '% identity with human peptidome'] = str(max(dictionary_human[row['Sequence']]))
+        final_df.at[index, '% identity with human peptidome'] = float(max(dictionary_human[row['Sequence']]))
     else:
         final_df.at[index, '% identity with human peptidome'] = 0
     final_df.at[index, 'Peptide of 11kmer-aa'] = str(dictionary_sequences[row['Sequence']])
@@ -132,10 +138,10 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
 
-final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_all_HLAs/'
                 'Cterminalmatches_location.csv', index=False)
 
-final_df.drop(range(1956, 1979), axis=0, inplace=True)  # Remove the His-Tag from one of the sequences
+final_df = final_df[(final_df['Sequence'] > 287) | (final_df['Sequence'] < 283)]
 
 # %% Plotting of the results
 
@@ -146,6 +152,12 @@ Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/Alle
                       sheet_name='TOP_ABC')
 
 result_dict = Table.to_dict(orient='dict')
+
+# temp_file = open('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Dictionary_country_alleles.pickle',
+#                 'rb')
+# dict_alleles = pickle.load(temp_file)
+
+# result_dict = dict_with_lists = {k: ['HLA-' + i for i in v] for k, v in dict_alleles.items()}
 
 list_countries = [x for x in result_dict.keys()]
 color_codes = [
@@ -181,8 +193,12 @@ for country in tqdm(result_dict.keys()):
     hla_recognition = []
     sequences_recognition = []
     number_variations = []
+    min_similarity_hum_peptidome = []
+    max_similarity_hum_peptidome = []
+    average_similarity_hum_peptidome = []
 
     listHLAs = list(result_dict[country].values())
+    # listHLAs = list(result_dict[country])
     countryDF = Filtered_df[Filtered_df['Allele'].isin(listHLAs)].sort_values(by=['Absolute start'], ascending=True)
     startingkmer = final_df['Absolute start'].min()
     endingkmer = startingkmer + 11
@@ -206,7 +222,11 @@ for country in tqdm(result_dict.keys()):
         number_variants.append(len(sequences))
 
         tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
-        variations = set(tempdf3['Sequence'].to_list())
+        variations = set(tempdf3['Sequence'].astype(str).to_list())
+        min_similarity_hum_peptidome.append(min(set(tempdf3['% identity with human peptidome'].to_list())))
+        max_similarity_hum_peptidome.append(max(set(tempdf3['% identity with human peptidome'].to_list())))
+        average_similarity_hum_peptidome.append((sum(set(tempdf3['% identity with human peptidome'].to_list())) /
+                                                 len(set(tempdf3['% identity with human peptidome'].to_list()))))
 
         sequences_recognition.append(len(sequences_country))
         number_variations.append(len(variations))
@@ -217,8 +237,12 @@ for country in tqdm(result_dict.keys()):
     new_df2.index = x_axis
     new_df['Sequences with C-terminal / NonHuman'] = number_variants
     new_df2['Total variations'] = number_variations
+    new_df2['Kmer min% human peptidome'] = min_similarity_hum_peptidome
+    new_df2['Kmer average% human peptidome'] = average_similarity_hum_peptidome
+    new_df2['Kmer max% human peptidome'] = max_similarity_hum_peptidome
     new_df[country] = hla_recognition
     new_df2[country] = sequences_recognition
+
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(25, 20), sharex=True)
     # Creation of the plot with the different populations
     ax1.bar(x=x_axis, height=number_variations, edgecolor='black', color='white')
