@@ -138,7 +138,7 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
 
-final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_all_HLAs/'
+final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
                 'Cterminalmatches_location.csv', index=False)
 
 final_df = final_df[(final_df['Sequence'] > 287) | (final_df['Sequence'] < 283)]
@@ -185,7 +185,6 @@ color_dictionary = dict(zip(list_countries, color_codes))
 
 new_df = pd.DataFrame()
 new_df2 = pd.DataFrame()
-new_df3 = pd.DataFrame()
 print('Generating the figures for the different countries')
 for country in tqdm(result_dict.keys()):
     x_axis = []
@@ -205,9 +204,6 @@ for country in tqdm(result_dict.keys()):
 
     number_alleles_full = len(set(countryDF['Sequence'].to_list()))
     number_variants_full = len(set(final_df['Sequence'].to_list()))
-
-    new_df3.at['Number of variations recognised in total', country] = number_alleles_full
-    new_df3.at['Total number of possible variations', country] = number_variants_full
 
     while startingkmer <= final_df['Absolute start'].max():
         x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))  # Creation the kmer axis
@@ -261,6 +257,5 @@ writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NC
                         'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
 new_df.to_excel(writer, sheet_name='HLA numbers')
 new_df2.to_excel(writer, sheet_name='RelativeFreq')
-new_df3.to_excel(writer, sheet_name='AbsoluteRecognition_Country')
 
 writer.close()
