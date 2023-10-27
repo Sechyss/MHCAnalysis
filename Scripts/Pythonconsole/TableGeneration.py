@@ -159,13 +159,13 @@ for key1 in dict_alleles:
                 shared[(key1, key2)] = len(intersection) / len(set(alleles1 + alleles2))
 
 keys = sorted(list(set([key[0] for key in shared.keys()] + [key[1] for key in shared.keys()])))
-data = [[shared.get((key1, key2), 0) for key2 in keys] for key1 in keys]
+data1 = [[shared.get((key1, key2), 0) for key2 in keys] for key1 in keys]
 
 # Create a mask for the upper triangle of the heatmap
-mask = np.triu(np.ones_like(data, dtype=bool))
+mask = np.triu(np.ones_like(data1, dtype=bool))
 
 plt.figure(figsize=(20, 15))
-sns.heatmap(data, xticklabels=keys, yticklabels=keys, annot=True,
+sns.heatmap(data1, xticklabels=keys, yticklabels=keys, annot=True,
             cbar=False, cmap="YlGnBu", mask=mask, vmin=0, vmax=1, fmt=".2f")
 plt.yticks(fontweight="bold")
 plt.xticks(fontweight="bold")

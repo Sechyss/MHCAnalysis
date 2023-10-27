@@ -6,7 +6,8 @@ world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
 
 # List of countries to highlight
 highlighted_countries = ['Papua New Guinea', 'New Caledonia', 'Philippines', 'Hawaii', 'China', 'India', 'Georgia',
-                         'Iran', 'Mali', 'Morocco', 'Ghana', 'Kenya', 'Zimbabwe', 'United Kingdom', 'Greece', 'Ireland']
+                         'Iran', 'Mali', 'Morocco', 'Ghana', 'Kenya', 'Zimbabwe', 'United Kingdom', 'Greece', 'Ireland',
+                         'Finland']
 
 # Filter the shapefile to include only the highlighted countries
 highlighted_countries_shape = world[world['name'].isin(highlighted_countries)]
