@@ -103,6 +103,7 @@ for key in tqdm(mhc_dict.keys()):
 
 final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('query id'), how='outer')
 final_df.reset_index(inplace=True)
+final_df = final_df.dropna(how='all')
 
 final_df['Peptide of 11kmer-aa'] = ''
 final_df['Absolute end (MHC peptide)'] = ''
@@ -141,7 +142,7 @@ for index, row in final_df.iterrows():
 # final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
 #                'Cterminalmatches_location.csv', index=False)
 
-final_df = final_df[(final_df['Sequence'] > 287) | (final_df['Sequence'] < 283)]
+#final_df = final_df[(final_df['Sequence'] > 287) | (final_df['Sequence'] < 283)]
 
 # %% Plotting of the results
 
@@ -235,7 +236,7 @@ for country in tqdm(result_dict.keys()):
     new_df2['Total variations'] = number_variations
     new_df2['Kmer min% human peptidome'] = min_similarity_hum_peptidome
     new_df2['Kmer average% human peptidome'] = average_similarity_hum_peptidome
-    new_df2['Kmer max% human peptidome'] = max_similarity_hum_peptidome
+    new_df2['Kmer max% human peptide'] = max_similarity_hum_peptidome
     new_df[country] = hla_recognition
     new_df2[country] = sequences_recognition
 
@@ -249,14 +250,14 @@ for country in tqdm(result_dict.keys()):
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
     plt.tight_layout()
-    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_nonetchopfilter/'
-                'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
+    #plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_nonetchopfilter/'
+    #            'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
 
     plt.show()
-writer = pd.ExcelWriter(
-    '/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_nonetchopfilter/'
-    'AllelePopNCBI_Workflow_nonetchopfilter_SummaryTable.xlsx', engine='openpyxl')
-new_df.to_excel(writer, sheet_name='HLA numbers')
-new_df2.to_excel(writer, sheet_name='RelativeFreq')
+#writer = pd.ExcelWriter(
+#    '/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_nonetchopfilter/'
+#    'AllelePopNCBI_Workflow_nonetchopfilter_SummaryTable.xlsx', engine='openpyxl')
+#new_df.to_excel(writer, sheet_name='HLA numbers')
+#new_df2.to_excel(writer, sheet_name='RelativeFreq')
 
-writer.close()
+#writer.close()
