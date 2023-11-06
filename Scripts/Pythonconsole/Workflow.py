@@ -24,13 +24,13 @@ Blastp_human_recognition = Blastp_human_recognition[Blastp_human_recognition['% 
 HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
-# Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-#                          'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
-#                          'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
-
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                          'NCBI_CSP/resultsPredictionBinding_NCBI_ALL/'
-                          'Filtered_HLAs_all_all_lenght_NCBIkmers.txt', sep='\t')
+                          'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
+                          'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
+
+# Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
+#                          'NCBI_CSP/resultsPredictionBinding_NCBI_ALL/'
+#                          'Filtered_HLAs_all_all_lenght_NCBIkmers.txt', sep='\t')
 
 # Create a dictionary to store MHC data for each 'seq_num'
 mhc_dict = {}
@@ -138,15 +138,15 @@ for index, row in final_df.iterrows():
     else:
         final_df.at[index, 'Human peptide recognition'] = 0
 
-final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-                'Cterminalmatches_location.csv', index=False)
+# final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+#                'Cterminalmatches_location.csv', index=False)
 
 final_df = final_df[(final_df['Sequence'] > 287) | (final_df['Sequence'] < 283)]
 
 # %% Plotting of the results
 
 final_df.dropna(subset=['Absolute start'], inplace=True)
-Filtered_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 0)]
+Filtered_df = final_df[final_df['Human peptide recognition'] == 0]
 
 Table = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
                       sheet_name='TOP_ABC')
@@ -202,8 +202,8 @@ for country in tqdm(result_dict.keys()):
     startingkmer = final_df['Absolute start'].min()
     endingkmer = startingkmer + 11
 
-    number_alleles_full = len(set(countryDF['Sequence'].to_list()))
-    number_variants_full = len(set(final_df['Sequence'].to_list()))
+    # number_alleles_full = len(set(countryDF['Sequence'].to_list()))
+    # number_variants_full = len(set(final_df['Sequence'].to_list()))
 
     while startingkmer <= final_df['Absolute start'].max():
         x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))  # Creation the kmer axis
@@ -249,12 +249,13 @@ for country in tqdm(result_dict.keys()):
     plt.xticks(fontsize=10, fontweight='bold', rotation='vertical')
 
     plt.tight_layout()
-    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
+    plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_nonetchopfilter/'
                 'Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
 
     plt.show()
-writer = pd.ExcelWriter('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
-                        'AllelePopNCBI_WorkflowSummaryTable.xlsx', engine='openpyxl')
+writer = pd.ExcelWriter(
+    '/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow_nonetchopfilter/'
+    'AllelePopNCBI_Workflow_nonetchopfilter_SummaryTable.xlsx', engine='openpyxl')
 new_df.to_excel(writer, sheet_name='HLA numbers')
 new_df2.to_excel(writer, sheet_name='RelativeFreq')
 
