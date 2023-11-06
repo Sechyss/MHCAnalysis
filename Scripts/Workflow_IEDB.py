@@ -44,6 +44,8 @@ def main():
 
     # Read a table of MHC data from a TSV file
     Table_mhc = pd.read_table(args.mhcpred, sep='\t')
+    Table_mhc.dropna(how='all', inplace=True)
+    Table_mhc['seq_num'] = Table_mhc['seq_num'].astype(int)
 
     mhc_dict = {}
     for index, row in Table_mhc.iterrows():
@@ -86,7 +88,7 @@ def main():
         peptide_sequence = seq_record.seq
         dictionary_sequences.update({sequence_id: peptide_sequence})
 
-    collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Epitope', 'C-terminal aa'])
+    collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Epitope'])
 
     print('Analyzing the sequences in the dictionary mhc data')
     for key in tqdm(mhc_dict.keys()):
@@ -95,14 +97,14 @@ def main():
                                        'Allele': mhc_dict[key][0][element],
                                        'Starting aa': mhc_dict[key][1][element],
                                        'Ending aa': mhc_dict[key][2][element],
-                                       'Epitope': mhc_dict[key][3][element],
-                                       'C-terminal aa': mhc_dict[key][4][element]}, index=[0])
+                                       'Epitope': mhc_dict[key][3][element]}, index=[0])
             collectordf = pd.concat([row_to_add, collectordf.loc[:]]).reset_index(drop=True)
 
     # Preparation of the final dataframe which contains all the relevant data
 
     final_df = collectordf.set_index('Sequence').join(Table_blastp_Pf3D7.set_index('query id'), how='outer')
     final_df.reset_index(inplace=True)
+    final_df = final_df.dropna(how='all')
 
     final_df['Peptide of 11kmer-aa'] = ''
     final_df['Absolute end (MHC peptide)'] = ''
@@ -181,26 +183,40 @@ def main():
             x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))  # Creation the kmer axis
 
             tempdf = countryDF[countryDF['Absolute start'] == startingkmer]  # Filtering the country df to the kmer axis
-            alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
-            sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
-            hla_recognition.append(len(alleles))
+            temp_list = tempdf['Absolute start'].tolist()
+            if len(temp_list) > 0:
+                alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
+                sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
+                hla_recognition.append(len(alleles))
 
-            tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer]  # selection of the filtered df to kmer
-            sequences = set(tempdf2['Sequence'].to_list())
-            number_variants.append(len(sequences))
+                tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer]  # selection of the filtered df to kmer
+                sequences = set(tempdf2['Sequence'].to_list())
+                number_variants.append(len(sequences))
 
-            tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
-            variations = set(tempdf3['Sequence'].astype(str).to_list())
-            min_similarity_hum_peptidome.append(min(set(tempdf3['% identity with human peptidome'].to_list())))
-            max_similarity_hum_peptidome.append(max(set(tempdf3['% identity with human peptidome'].to_list())))
-            average_similarity_hum_peptidome.append((sum(set(tempdf3['% identity with human peptidome'].to_list())) /
-                                                     len(set(tempdf3['% identity with human peptidome'].to_list()))))
+                tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
+                variations = set(tempdf3['Sequence'].astype(str).to_list())
+                min_similarity_hum_peptidome.append(min(set(tempdf3['% identity with human peptidome'].to_list())))
+                max_similarity_hum_peptidome.append(max(set(tempdf3['% identity with human peptidome'].to_list())))
+                average_similarity_hum_peptidome.append((sum(set(tempdf3['% identity with human peptidome'].to_list())) /
+                                                         len(set(tempdf3['% identity with human peptidome'].to_list()))))
 
-            sequences_recognition.append(len(sequences_country))
-            number_variations.append(len(variations))
+                sequences_recognition.append(len(sequences_country))
+                number_variations.append(len(variations))
 
-            startingkmer += 1
-            endingkmer += 1
+                startingkmer += 1
+                endingkmer += 1
+            else:
+                hla_recognition.append(0)
+                number_variants.append(0)
+                min_similarity_hum_peptidome.append(0)
+                max_similarity_hum_peptidome.append(0)
+                average_similarity_hum_peptidome.append(0)
+                sequences_recognition.append(0)
+                number_variations.append(0)
+
+                startingkmer += 1
+                endingkmer += 1
+
         new_df.index = x_axis
         new_df2.index = x_axis
         new_df['Sequences with C-terminal / NonHuman'] = number_variants
@@ -223,7 +239,6 @@ def main():
         plt.tight_layout()
         plt.savefig(str(args.output) + '/Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
 
-        plt.show()
     writer = pd.ExcelWriter(str(args.output) + '/AllelePopNCBI_Workflow_SummaryTable.xlsx', engine='openpyxl')
     new_df.to_excel(writer, sheet_name='HLA numbers')
     new_df2.to_excel(writer, sheet_name='RelativeFreq')
