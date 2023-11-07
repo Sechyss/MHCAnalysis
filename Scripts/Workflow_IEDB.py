@@ -188,34 +188,40 @@ def main():
                 alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
                 sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
                 hla_recognition.append(len(alleles))
+                sequences_recognition.append(len(sequences_country))
+            else:
+                hla_recognition.append(0)
+                sequences_recognition.append(0)
 
-                tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer]  # selection of the filtered df to kmer
+            tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer]  # selection of the filtered df to kmer
+            temp_list = tempdf2['Absolute start'].tolist()
+            if len(temp_list) > 0:
                 sequences = set(tempdf2['Sequence'].to_list())
                 number_variants.append(len(sequences))
+            else:
+                number_variants.append(0)
 
-                tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
+            tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
+            temp_list = tempdf3['Absolute start'].tolist()
+            if len(temp_list) > 0:
                 variations = set(tempdf3['Sequence'].astype(str).to_list())
                 min_similarity_hum_peptidome.append(min(set(tempdf3['% identity with human peptidome'].to_list())))
                 max_similarity_hum_peptidome.append(max(set(tempdf3['% identity with human peptidome'].to_list())))
-                average_similarity_hum_peptidome.append((sum(set(tempdf3['% identity with human peptidome'].to_list())) /
-                                                         len(set(tempdf3['% identity with human peptidome'].to_list()))))
+                average_similarity_hum_peptidome.append(
+                    (sum(set(tempdf3['% identity with human peptidome'].to_list())) /
+                     len(set(tempdf3['% identity with human peptidome'].to_list()))))
 
-                sequences_recognition.append(len(sequences_country))
                 number_variations.append(len(variations))
 
-                startingkmer += 1
-                endingkmer += 1
             else:
-                hla_recognition.append(0)
-                number_variants.append(0)
                 min_similarity_hum_peptidome.append(0)
                 max_similarity_hum_peptidome.append(0)
                 average_similarity_hum_peptidome.append(0)
-                sequences_recognition.append(0)
+
                 number_variations.append(0)
 
-                startingkmer += 1
-                endingkmer += 1
+            startingkmer += 1
+            endingkmer += 1
 
         new_df.index = x_axis
         new_df2.index = x_axis
