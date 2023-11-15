@@ -3,6 +3,10 @@ from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 
 
+def sum_nested_tuple(nt):
+    return sum(sum_nested_tuple(i) if isinstance(i, tuple) else i for i in nt)
+
+
 # Selection of total Population genotype 12
 
 S12_0 = 2600
@@ -81,12 +85,23 @@ y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
 
 # Creation of parameters
 
-gamma_value = 1/7  # Gamma value represents force of recovery from infection in these case dependent on time (7 days)
-sigma_value = 1/150  # Sigma value represents force of losing immunity against injection in these case dependent on time
+gamma_value = 1 / 7  # Gamma value represents force of recovery from infection in these case dependent on time (7 days)
+sigma_value = 1 / 150  # Sigma value represents force of losing immunity against injection in these case dependent on time
 birth_rate = 0.002  # Birthrate depending on adult population
 death_rate = 0.002
 
-t = np.linspace(0, 44, 44)  # Time series for the simulation
+beta_1a2a = 0.25
+beta_1a2b = 0.15
+beta_1b2a = 0.30
+beta_1b2b = 0.11
+
+beta_values = beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b
+
+t = np.linspace(0, 800, 800)  # Time series for the simulation
+
+y = y_12, y_11, y_22, y_33  # This variable packs all the compartments into one
+
+total_population = sum_nested_tuple(y)
 
 
 def deriv_equations(y, t, betas, gamma, sigma, death, birth, tap):
@@ -178,8 +193,11 @@ def deriv_equations(y, t, betas, gamma, sigma, death, birth, tap):
             dM22_dt, dS33dt, dI33_1a2a_dt, dI33_1a2b_dt, dI33_1b2a_dt, dI33_1b2b_dt, dM33_dt)
 
 
-y = y_12, y_11, y_22, y_33
-
 # ----------------------------------------------------------------
 # In process to finish
-# ret = odeint(deriv_equations, y, t, args=(Nc, gamma_value, sigma_value, death_rate, birth_rate, alphaC))
+ret = odeint(deriv_equations, y, t, args=(beta_values, gamma_value, sigma_value, death_rate, birth_rate, total_population))
+(dS12, dI12_1a2a, dI12_1a2b, dI12_1b2a, dI12_1b2b, dR12_1a2a, dR12_1a2b, dR12_1b2a, dR12_1b2b, dH12_1a2a, dH12_1a2b,
+ dH12_1b2a, dH12_1b2b, dJ12_1a2a, dJ12_1a2b, dJ12_1b2a, dJ12_1b2b, dM12, dS11, dI11_1a2a, dI11_1a2b, dI11_1b2a,
+ dI11_1b2b, dR11_1a, dR11_1b, dH11_1a, dH11_1b, dJ11_1a2a, dJ11_1a2b, dJ11_1b2a, dJ11_1b2b, dM11, dS22, dI22_1a2a,
+ dI22_1a2b, dI22_1b2a, dI22_1b2b, dR22_2a, dR22_2b, dH22_2a, dH22_2b, dJ22_1a2a, dJ22_1a2b, dJ22_1b2a, dJ22_1b2b,
+ dM22, dS33, dI33_1a2a, dI33_1a2b, dI33_1b2a, dI33_1b2b, dM33) = ret.T
