@@ -88,12 +88,12 @@ y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
 gamma_value = 1 / 7  # Gamma value represents force of recovery from infection in these case dependent on time (7 days)
 sigma_value = 1 / 150  # Sigma value represents force of losing immunity against injection in these case dependent on time
 birth_rate = 0.002  # Birthrate depending on adult population
-death_rate = 0.002
+death_rate = 0.002  # Death rate depending on external causes
 
-beta_1a2a = 0.25
-beta_1a2b = 0.15
-beta_1b2a = 0.30
-beta_1b2b = 0.11
+beta_1a2a = 0.25  # Probability of infection by strain 1a2a
+beta_1a2b = 0.15  # Probability of infection by strain 1a2b
+beta_1b2a = 0.30  # Probability of infection by strain 1b2a
+beta_1b2b = 0.11  # Probability of infection by strain 1b2b
 
 beta_values = beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b
 
