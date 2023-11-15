@@ -81,6 +81,12 @@ y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
 
 # Creation of parameters
 
+gamma_value = 1/7  # Gamma value represents force of recovery from infection in these case dependent on time (7 days)
+sigma_value = 1/150  # Sigma value represents force of losing immunity against injection in these case dependent on time
+birth_rate = 0.002
+death_rate = 0.002
+
+
 def deriv_equations(y1, y2, y3, y4, t, betas, gamma, sigma, death, birth, tap):
     # Unpackaging parameters from the input populations
     (S12, I12_1a2a, I12_1b2b, I12_1a2b, I12_1b2a, J12_1a2a, J12_1a2b, J12_1b2a, J12_1b2b, R12_1a2a, R12_1a2b, R12_1b2a,
