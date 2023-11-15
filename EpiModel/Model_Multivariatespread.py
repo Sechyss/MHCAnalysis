@@ -6,11 +6,77 @@ import matplotlib.pyplot as plt
 # Selection of total Population genotype 12
 
 S12_0 = 2600
-I12_0 = 12
+I12_1a2a_0 = 15
+I12_1a2b_0 = 15
+I12_1b2a_0 = 15
+I12_1b2b_0 = 15
+J12_1a2a_0 = 0
+J12_1a2b_0 = 0
+J12_1b2a_0 = 0
+J12_1b2b_0 = 0
+R12_1a2a_0 = 0
+R12_1a2b_0 = 0
+R12_1b2a_0 = 0
+R12_1b2b_0 = 0
+H12_1a2a_0 = 0
+H12_1a2b_0 = 0
+H12_1b2a_0 = 0
+H12_1b2b_0 = 0
+M12_0 = 0
 
+y_12 = (S12_0, I12_1b2a_0, I12_1a2a_0, I12_1a2b_0, I12_1b2b_0, J12_1a2a_0, J12_1a2b_0, J12_1b2a_0, J12_1b2b_0,
+        R12_1a2a_0, R12_1a2b_0, R12_1b2a_0, R12_1b2b_0, H12_1a2a_0, H12_1a2b_0, H12_1b2a_0, H12_1b2b_0, M12_0)
 
+# Selection of total Population genotype 11
 
+S11_0 = 2600
+I11_1a2a_0 = 15
+I11_1a2b_0 = 15
+I11_1b2a_0 = 15
+I11_1b2b_0 = 15
+J11_1a2a_0 = 0
+J11_1a2b_0 = 0
+J11_1b2a_0 = 0
+J11_1b2b_0 = 0
+R11_1a_0 = 0
+R11_1b_0 = 0
+H11_1a_0 = 0
+H11_1b_0 = 0
+M11_0 = 0
 
+y_11 = (S11_0, I11_1b2a_0, I11_1a2a_0, I11_1a2b_0, I11_1b2b_0, J11_1a2a_0, J11_1a2b_0, J11_1b2a_0, J11_1b2b_0,
+        R11_1a_0, R11_1b_0, H11_1a_0, H11_1b_0, M11_0)
+
+# Selection of total Population genotype 22
+
+S22_0 = 2600
+I22_1a2a_0 = 15
+I22_1a2b_0 = 15
+I22_1b2a_0 = 15
+I22_1b2b_0 = 15
+J22_1a2a_0 = 0
+J22_1a2b_0 = 0
+J22_1b2a_0 = 0
+J22_1b2b_0 = 0
+R22_2a_0 = 0
+R22_2b_0 = 0
+H22_2a_0 = 0
+H22_2b_0 = 0
+M22_0 = 0
+
+y_22 = (S22_0, I22_1b2a_0, I22_1a2a_0, I22_1a2b_0, I22_1b2b_0, J22_1a2a_0, J22_1a2b_0, J22_1b2a_0, J22_1b2b_0,
+        R22_2a_0, R22_2b_0, H22_2a_0, H22_2b_0, M22_0)
+
+# Selection of total Population genotype 22
+
+S33_0 = 2600
+I33_1a2a_0 = 15
+I33_1a2b_0 = 15
+I33_1b2a_0 = 15
+I33_1b2b_0 = 15
+M33_0 = 0
+
+y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
 
 
 # Creation of parameters
