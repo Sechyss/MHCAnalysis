@@ -13,15 +13,17 @@ from Bio import SeqIO
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=textwrap.dedent('''\
-    Workflow combining the data from BLASTP and the results obtained by IEDB.
+    Workflow combining the data from BLASTP and the results obtained by IEDB and Netchop.
     ------------------------------------------
     '''))
 
     parser.add_argument("-b", "--blastpH", metavar='file.tsv', dest="blastpH", help="Blastphuman Table", type=str)
     parser.add_argument("-m", "--mhcpred", metavar='file.tsv', dest="mhcpred", help="MHC prediction Table", type=str)
+    parser.add_argument("-n", "--netchop", metavar="file.csv", dest="netchop", help="Netchop prediction", type=str)
     parser.add_argument("-r", "--blastpRef", metavar='file.tsv', dest="blastpRef", help="BlastpRef Table", type=str)
     parser.add_argument("-s", "--sequences", dest="fastafile", help="Fasta Kmer sequence", type=str)
     parser.add_argument("-o", "--output", dest="output", help="Output folder", type=str)
+    parser.add_argument("-f", "--filter", metavar="y OR n", dest="filter", help="Filter data using Necthop", type=str)
     parser.add_argument("-d", "--dictionary", dest="dictionary", help="Table of HLAs - Dictionary", type=str)
 
     args = parser.parse_args()
@@ -77,6 +79,14 @@ def main():
     Table_blastp_Pf3D7 = Table_blastp_Pf3D7.drop(['subject id', 'alignment length',
                                                   'bit score', 'gap opens', 'evalue'], axis=1)
 
+    # Read Netchop result table from a CSV file
+    NetchopTable = pd.read_csv(args.netchop)
+
+    # Create a dictionary to store Netchop data for each '#'
+    netchop_dict = {}
+    for index, row in NetchopTable.iterrows():
+        netchop_dict.update({row['#']: [row['amino_acid'], row['prediction_score']]})
+
     # Creation of sequence dictionary
 
     fastafile = SeqIO.parse(args.fastafile, 'fasta')
@@ -121,6 +131,18 @@ def main():
             final_df.at[index, '% identity with human peptidome'] = 0
         final_df.at[index, 'Peptide of 11kmer-aa'] = str(dictionary_sequences[row['Sequence']])
 
+        if absolute_end in netchop_dict.keys():
+            C_value = netchop_dict[absolute_end][0]
+            prediction_score = netchop_dict[absolute_end][1]
+            final_df.at[index, 'Netchop prediction scores'] = prediction_score
+            if (C_value == row['C-terminal aa']) & (prediction_score >= 0.5):
+                final_df.at[index, 'C-terminal match'] = 1
+            else:
+                final_df.at[index, 'C-terminal match'] = 0
+        else:
+            final_df.at[index, 'C-terminal match'] = 'No MHC recognition'
+            final_df.at[index, 'Netchop prediction scores'] = 'No MHC recognition'
+
         if row['Sequence'] in HumanKmers:
             final_df.at[index, 'Human peptide recognition'] = 1
         else:
@@ -131,7 +153,10 @@ def main():
     final_df.to_csv(str(args.output) + '/Cterminalmatches_location.csv', index=False)
 
     final_df.dropna(subset=['Absolute start'], inplace=True)
-    Filtered_df = final_df[final_df['Human peptide recognition'] == 0]
+    if args.filter == 'n':
+        Filtered_df = final_df[final_df['Human peptide recognition'] == 0]
+    else:
+        Filtered_df = final_df[(final_df['C-terminal match'] == 1) & (final_df['Human peptide recognition'] == 0)]
 
     Table = pd.read_excel(args.dictionary, sheet_name='TOP_ABC')
 
@@ -245,7 +270,7 @@ def main():
         plt.tight_layout()
         plt.savefig(str(args.output) + '/Kmer_NCBI_workflow_recognition_' + country + '.pdf', dpi=600)
 
-    writer = pd.ExcelWriter(str(args.output) + '/AllelePopNCBI_Workflow_SummaryTable.xlsx', engine='openpyxl')
+    writer = pd.ExcelWriter(str(args.output) + '/'+str(args.output)+'_AllelePopNCBI_Workflow_SummaryTable.xlsx', engine='openpyxl')
     new_df.to_excel(writer, sheet_name='HLA numbers')
     new_df2.to_excel(writer, sheet_name='RelativeFreq')
 
