@@ -83,19 +83,21 @@ y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
 
 gamma_value = 1/7  # Gamma value represents force of recovery from infection in these case dependent on time (7 days)
 sigma_value = 1/150  # Sigma value represents force of losing immunity against injection in these case dependent on time
-birth_rate = 0.002
+birth_rate = 0.002  # Birthrate depending on adult population
 death_rate = 0.002
 
+t = np.linspace(0, 44, 44)  # Time series for the simulation
 
-def deriv_equations(y1, y2, y3, y4, t, betas, gamma, sigma, death, birth, tap):
+
+def deriv_equations(y, t, betas, gamma, sigma, death, birth, tap):
     # Unpackaging parameters from the input populations
     (S12, I12_1a2a, I12_1b2b, I12_1a2b, I12_1b2a, J12_1a2a, J12_1a2b, J12_1b2a, J12_1b2b, R12_1a2a, R12_1a2b, R12_1b2a,
-     R12_1b2b, H12_1a2a, H12_1a2b, H12_1b2a, H12_1b2b, M12) = y1
+     R12_1b2b, H12_1a2a, H12_1a2b, H12_1b2a, H12_1b2b, M12) = y[0]
     (S11, I11_1a2a, I11_1b2b, I11_1a2b, I11_1b2a, J11_1a2a, J11_1a2b, J11_1b2a, J11_1b2b, R11_1a, R11_1b, H11_1a, H11_1b
-     , M11) = y2
+     , M11) = y[1]
     (S22, I22_1a2a, I22_1b2b, I22_1a2b, I22_1b2a, J22_1a2a, J22_1a2b, J22_1b2a, J22_1b2b, R22_2a, R22_2b, H22_2a, H22_2b
-     , M22) = y3
-    S33, I33_1a2a, I33_1b2b, I33_1a2b, I33_1b2a, M33 = y4
+     , M22) = y[2]
+    S33, I33_1a2a, I33_1b2b, I33_1a2b, I33_1b2a, M33 = y[3]
 
     beta1a2a, beta1a2b, beta1b2a, beta1b2b = betas
 
@@ -174,3 +176,10 @@ def deriv_equations(y1, y2, y3, y4, t, betas, gamma, sigma, death, birth, tap):
             dJ11_1b2a_dt, dJ11_1b2b_dt, dM11_dt, dS22dt, dI22_1a2a_dt, dI22_1a2b_dt, dI22_1b2a_dt, dI22_1b2b_dt,
             dR22_2a_dt, dR22_2b_dt, dH22_2a_dt, dH22_2b_dt, dJ22_1a2a_dt, dJ22_1a2b_dt, dJ22_1b2a_dt, dJ22_1b2b_dt,
             dM22_dt, dS33dt, dI33_1a2a_dt, dI33_1a2b_dt, dI33_1b2a_dt, dI33_1b2b_dt, dM33_dt)
+
+
+y = y_12, y_11, y_22, y_33
+
+# ----------------------------------------------------------------
+# In process to finish
+# ret = odeint(deriv_equations, y, t, args=(Nc, gamma_value, sigma_value, death_rate, birth_rate, alphaC))
