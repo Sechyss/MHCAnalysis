@@ -1,6 +1,6 @@
 import numpy as np
+import pandas as pd
 from scipy.integrate import odeint
-import matplotlib.pyplot as plt
 
 
 def sum_nested_tuple(nt):
@@ -82,12 +82,11 @@ M33_0 = 0
 
 y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
 
-
 # Creation of parameters
 
 gamma_value = 1 / 7  # Gamma value represents force of recovery from infection in these case dependent on time (7 days)
 sigma_value = 1 / 150  # Sigma value represents force of losing immunity against injection in these case dependent on time
-birth_rate = 0.002  # Birthrate depending on adult population
+birth_rate = 0.02  # Birthrate depending on adult population
 death_rate = 0.002  # Death rate depending on external causes
 
 beta_1a2a = 0.25  # Probability of infection by strain 1a2a
@@ -99,20 +98,20 @@ beta_values = beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b
 
 t = np.linspace(0, 800, 800)  # Time series for the simulation
 
-y = y_12, y_11, y_22, y_33  # This variable packs all the compartments into one
+y_values = y_12 + y_11 + y_22 + y_33  # This variable packs all the compartments into one
 
-total_population = sum_nested_tuple(y)
+total_pop = sum_nested_tuple(y_values)
 
 
-def deriv_equations(y, t, betas, gamma, sigma, death, birth, tap):
+def deriv_equations(y: tuple, t, betas: tuple, gamma, sigma, death, birth, tap):
     # Unpackaging parameters from the input populations
     (S12, I12_1a2a, I12_1b2b, I12_1a2b, I12_1b2a, J12_1a2a, J12_1a2b, J12_1b2a, J12_1b2b, R12_1a2a, R12_1a2b, R12_1b2a,
-     R12_1b2b, H12_1a2a, H12_1a2b, H12_1b2a, H12_1b2b, M12) = y[0]
+     R12_1b2b, H12_1a2a, H12_1a2b, H12_1b2a, H12_1b2b, M12) = y[0:18]
     (S11, I11_1a2a, I11_1b2b, I11_1a2b, I11_1b2a, J11_1a2a, J11_1a2b, J11_1b2a, J11_1b2b, R11_1a, R11_1b, H11_1a, H11_1b
-     , M11) = y[1]
+     , M11) = y[18:32]
     (S22, I22_1a2a, I22_1b2b, I22_1a2b, I22_1b2a, J22_1a2a, J22_1a2b, J22_1b2a, J22_1b2b, R22_2a, R22_2b, H22_2a, H22_2b
-     , M22) = y[2]
-    S33, I33_1a2a, I33_1b2b, I33_1a2b, I33_1b2a, M33 = y[3]
+     , M22) = y[32:46]
+    S33, I33_1a2a, I33_1b2b, I33_1a2b, I33_1b2a, M33 = y[46:]
 
     beta1a2a, beta1a2b, beta1b2a, beta1b2b = betas
 
@@ -195,9 +194,17 @@ def deriv_equations(y, t, betas, gamma, sigma, death, birth, tap):
 
 # ----------------------------------------------------------------
 # In process to finish
-ret = odeint(deriv_equations, y, t, args=(beta_values, gamma_value, sigma_value, death_rate, birth_rate, total_population))
-(dS12, dI12_1a2a, dI12_1a2b, dI12_1b2a, dI12_1b2b, dR12_1a2a, dR12_1a2b, dR12_1b2a, dR12_1b2b, dH12_1a2a, dH12_1a2b,
- dH12_1b2a, dH12_1b2b, dJ12_1a2a, dJ12_1a2b, dJ12_1b2a, dJ12_1b2b, dM12, dS11, dI11_1a2a, dI11_1a2b, dI11_1b2a,
- dI11_1b2b, dR11_1a, dR11_1b, dH11_1a, dH11_1b, dJ11_1a2a, dJ11_1a2b, dJ11_1b2a, dJ11_1b2b, dM11, dS22, dI22_1a2a,
- dI22_1a2b, dI22_1b2a, dI22_1b2b, dR22_2a, dR22_2b, dH22_2a, dH22_2b, dJ22_1a2a, dJ22_1a2b, dJ22_1b2a, dJ22_1b2b,
- dM22, dS33, dI33_1a2a, dI33_1a2b, dI33_1b2a, dI33_1b2b, dM33) = ret.T
+ret1 = odeint(deriv_equations, y_values, t, args=(beta_values, gamma_value, sigma_value, death_rate, birth_rate,
+                                                  total_pop))
+
+dataframe = pd.DataFrame(data=ret1, columns=['dS12dt', 'dI12_1a2a_dt', 'dI12_1a2b_dt', 'dI12_1b2a_dt', 'dI12_1b2b_dt',
+                                             'dR12_1a2a_dt', 'dR12_1a2b_dt', 'dR12_1b2a_dt', 'dR12_1b2b_dt',
+                                             'dH12_1a2a_dt', 'dH12_1a2b_dt', 'dH12_1b2a_dt', 'dH12_1b2b_dt',
+                                             'dJ12_1a2a_dt', 'dJ12_1a2b_dt', 'dJ12_1b2a_dt', 'dJ12_1b2b_dt', 'dM12_dt',
+                                             'dS11dt', 'dI11_1a2a_dt', 'dI11_1a2b_dt', 'dI11_1b2a_dt', 'dI11_1b2b_dt',
+                                             'dR11_1a_dt', 'dR11_1b_dt', 'dH11_1a_dt', 'dH11_1b_dt', 'dJ11_1a2a_dt',
+                                             'dJ11_1a2b_dt', 'dJ11_1b2a_dt', 'dJ11_1b2b_dt', 'dM11_dt', 'dS22dt',
+                                             'dI22_1a2a_dt', 'dI22_1a2b_dt', 'dI22_1b2a_dt', 'dI22_1b2b_dt',
+                                             'dR22_2a_dt', 'dR22_2b_dt', 'dH22_2a_dt', 'dH22_2b_dt', 'dJ22_1a2a_dt',
+                                             'dJ22_1a2b_dt', 'dJ22_1b2a_dt', 'dJ22_1b2b_dt', 'dM22_dt', 'dS33dt',
+                                             'dI33_1a2a_dt', 'dI33_1a2b_dt', 'dI33_1b2a_dt', 'dI33_1b2b_dt', 'dM33_dt'])
