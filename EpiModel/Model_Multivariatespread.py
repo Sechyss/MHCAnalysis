@@ -10,10 +10,10 @@ def sum_nested_tuple(nt):
 # Selection of total Population genotype 12
 
 S12_0 = 2600
-I12_1a2a_0 = 15
-I12_1a2b_0 = 15
-I12_1b2a_0 = 15
-I12_1b2b_0 = 15
+I12_1a2a_0 = 0
+I12_1a2b_0 = 0
+I12_1b2a_0 = 0
+I12_1b2b_0 = 0
 J12_1a2a_0 = 0
 J12_1a2b_0 = 0
 J12_1b2a_0 = 0
@@ -33,11 +33,11 @@ y_12 = (S12_0, I12_1b2a_0, I12_1a2a_0, I12_1a2b_0, I12_1b2b_0, J12_1a2a_0, J12_1
 
 # Selection of total Population genotype 11
 
-S11_0 = 2600
-I11_1a2a_0 = 15
-I11_1a2b_0 = 15
-I11_1b2a_0 = 15
-I11_1b2b_0 = 15
+S11_0 = 0
+I11_1a2a_0 = 0
+I11_1a2b_0 = 0
+I11_1b2a_0 = 0
+I11_1b2b_0 = 0
 J11_1a2a_0 = 0
 J11_1a2b_0 = 0
 J11_1b2a_0 = 0
@@ -53,11 +53,11 @@ y_11 = (S11_0, I11_1b2a_0, I11_1a2a_0, I11_1a2b_0, I11_1b2b_0, J11_1a2a_0, J11_1
 
 # Selection of total Population genotype 22
 
-S22_0 = 2600
-I22_1a2a_0 = 15
-I22_1a2b_0 = 15
-I22_1b2a_0 = 15
-I22_1b2b_0 = 15
+S22_0 = 0
+I22_1a2a_0 = 0
+I22_1a2b_0 = 0
+I22_1b2a_0 = 0
+I22_1b2b_0 = 0
 J22_1a2a_0 = 0
 J22_1a2b_0 = 0
 J22_1b2a_0 = 0
@@ -71,13 +71,13 @@ M22_0 = 0
 y_22 = (S22_0, I22_1b2a_0, I22_1a2a_0, I22_1a2b_0, I22_1b2b_0, J22_1a2a_0, J22_1a2b_0, J22_1b2a_0, J22_1b2b_0,
         R22_2a_0, R22_2b_0, H22_2a_0, H22_2b_0, M22_0)
 
-# Selection of total Population genotype 22
+# Selection of total Population genotype 33
 
-S33_0 = 2600
-I33_1a2a_0 = 15
-I33_1a2b_0 = 15
-I33_1b2a_0 = 15
-I33_1b2b_0 = 15
+S33_0 = 0
+I33_1a2a_0 = 0
+I33_1a2b_0 = 0
+I33_1b2a_0 = 0
+I33_1b2b_0 = 0
 M33_0 = 0
 
 y_33 = (S33_0, I33_1b2a_0, I33_1a2a_0, I33_1a2b_0, I33_1b2b_0, M33_0)
@@ -88,12 +88,12 @@ gamma_value = 1 / 7  # Gamma value represents force of recovery from infection i
 sigma_value = 1 / 150  # Sigma value represents force of losing immunity against injection in these case dependent on
 # time
 birth_rate = 0.02  # Birthrate depending on adult population
-death_rate = 0.002  # Death rate depending on external causes
+death_rate = 0.00002  # Death rate depending on external causes
 
-beta_1a2a = 0.25  # Probability of infection by strain 1a2a
-beta_1a2b = 0.15  # Probability of infection by strain 1a2b
-beta_1b2a = 0.30  # Probability of infection by strain 1b2a
-beta_1b2b = 0.11  # Probability of infection by strain 1b2b
+beta_1a2a = 0.0000001  # Probability of infection by strain 1a2a
+beta_1a2b = 0.0000003  # Probability of infection by strain 1a2b
+beta_1b2a = 0.00000004  # Probability of infection by strain 1b2a
+beta_1b2b = 0.00000005  # Probability of infection by strain 1b2b
 
 beta_values = beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b
 
@@ -145,7 +145,7 @@ def deriv_equations(y: tuple, t, betas: tuple, gamma, sigma, death, birth, tap):
     dM12_dt = -death * M12 + gamma * (I12_1a2a + I12_1b2a + I12_1a2b + I12_1b2b)
 
     # Equations for genotype 11 (or 13)
-    dS11dt = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S11 + birth * tap
+    dS11dt = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S11 + birth * 0
     dI11_1a2a_dt = -(death + gamma) * I11_1a2a + lambda1a2a * S11
     dI11_1a2b_dt = -(death + gamma) * I11_1a2b + lambda1a2b * S11
     dI11_1b2a_dt = -(death + gamma) * I11_1b2a + lambda1b2a * S11
@@ -161,7 +161,7 @@ def deriv_equations(y: tuple, t, betas: tuple, gamma, sigma, death, birth, tap):
     dM11_dt = -death * M11 + gamma * (I11_1a2a + I11_1b2a + I11_1a2b + I11_1b2b)
 
     # Equations for genotype 22 (or 32)
-    dS22dt = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S22 + birth * tap
+    dS22dt = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S22 + birth * 0
     dI22_1a2a_dt = -(death + gamma) * I22_1a2a + lambda1a2a * S22
     dI22_1a2b_dt = -(death + gamma) * I22_1a2b + lambda1a2b * S22
     dI22_1b2a_dt = -(death + gamma) * I22_1b2a + lambda1b2a * S22
@@ -177,7 +177,7 @@ def deriv_equations(y: tuple, t, betas: tuple, gamma, sigma, death, birth, tap):
     dM22_dt = -death * M22 + gamma * (I22_1a2a + I22_1b2a + I22_1a2b + I22_1b2b)
 
     # Equations for genotype 33
-    dS33dt = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S33 + birth * tap + sigma * M33
+    dS33dt = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S33 + birth * 0 + sigma * M33
     dI33_1a2a_dt = -(death + gamma) * I33_1a2a + lambda1a2a * S33
     dI33_1a2b_dt = -(death + gamma) * I33_1a2b + lambda1a2b * S33
     dI33_1b2a_dt = -(death + gamma) * I33_1b2a + lambda1b2a * S33

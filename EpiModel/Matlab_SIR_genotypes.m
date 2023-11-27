@@ -3,8 +3,8 @@
 
 S12_0 = 2500;
 I12_1a2a_0 = 1;
-I12_1a2b_0 = 2;
-I12_1b2a_0 = 3;
+I12_1a2b_0 = 1;
+I12_1b2a_0 = 1;
 I12_1b2b_0 = 1;
 J12_1a2a_0 = 0;
 J12_1a2b_0 = 0;
@@ -24,9 +24,9 @@ M12_0 = 0;
 
 S11_0 = 2500;
 I11_1a2a_0 = 1;
-I11_1a2b_0 = 2;
-I11_1b2a_0 = 1;
-I11_1b2b_0 = 1;
+I11_1a2b_0 = 0;
+I11_1b2a_0 = 0;
+I11_1b2b_0 = 0;
 J11_1a2a_0 = 0;
 J11_1a2b_0 = 0;
 J11_1b2a_0 = 0;
@@ -41,8 +41,8 @@ M11_0 = 0;
 
 S22_0 = 2500;
 I22_1a2a_0 = 1;
-I22_1a2b_0 = 2;
-I22_1b2a_0 = 3;
+I22_1a2b_0 = 1;
+I22_1b2a_0 = 1;
 I22_1b2b_0 = 1;
 J22_1a2a_0 = 0;
 J22_1a2b_0 = 0;
@@ -79,28 +79,44 @@ y0 = [S12_0, I12_1a2a_0, I12_1a2b_0, I12_1b2a_0, I12_1b2b_0, R12_1a2a_0,...
     S33_0, I33_1a2a_0, I33_1a2b_0, I33_1b2a_0, ...
     I33_1b2b_0, M33_0];
 
+
 % Parameters
 gamma_value = 1 / 7;
-sigma_value = 1 / 30;
-birth_rate = 0.02;
-death_rate = 0.02;
-beta_1a2a = 0.001;
-beta_1a2b = 0.002;
-beta_1b2a = 0.001;
-beta_1b2b = 0.002;
+sigma_value = 1 / 150;
+birth_rate = 0.0002;
+death_rate = 0.0002;
+beta_1a2a = 0.0001;
+beta_1a2b = 0.0002;
+beta_1b2a = 0.0002;
+beta_1b2b = 0.0005;
 beta_values = [beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b];
 
 % Time span for simulation
-tspan=0:1:25;
+tspan=0:800;
 
 
 % Solve ODE
 options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8, 'NonNegative',1:52);
-ode_solution = ode45(@(t, y) deriv_equations(y, beta_values, gamma_value, sigma_value, death_rate, birth_rate), 0:300, y0, options);
+ode_solution = ode45(@(t, y) deriv_equations(y, beta_values, gamma_value, sigma_value, death_rate, birth_rate), tspan, y0, options);
 
 t = ode_solution.x;
 ret1 = ode_solution.y;
 
+% Plot the results
+% Creation of legend
+legend = {'S12', 'I12 1a2a', 'I12 1a2b', 'I12 1b2a', 'I12 1b2b', 'R12 1a2a', 'R12 1a2b', 'R12 1b2a', 'R12 1b2b', 'H12 1a2a', 'H12 1a2b', 'H12 1b2a', 'H12 1b2b', 'J12 1a2a', 'J12 1a2b', 'J12 1b2a', 'J12 1b2b', 'M12', 'S11', 'I11 1a2a', 'I11 1a2b', 'I11 1b2a', 'I11 1b2b', 'R11 1a', 'R11 1b', 'H11 1a', 'H11 1b', 'J11 1a2a', 'J11 1a2b', 'J11 1b2a', 'J11 1b2b', 'M11', 'S22', 'I22 1a2a', 'I22 1a2b', 'I22 1b2a', 'I22 1b2b', 'R22 2a', 'R22 2b', 'H22 2a', 'H22 2b', 'J22 1a2a', 'J22 1a2b', 'J22 1b2a', 'J22 1b2b', 'M22', 'S33', 'I33 1a2a', 'I33 1a2b', 'I33 1b2a', 'I33 1b2b', 'M33'};
+
+figure;
+hold on;
+
+% Loop through the legend elements and update line plot `DisplayName`
+for i = 1:length(legend)
+    plot(t, ret1(i, :), 'LineWidth', 2, 'DisplayName', legend{i});
+end
+
+xlabel('Time (days)');
+ylabel('Population');
+title('Population Dynamics by Genotype');
 
 
 function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
