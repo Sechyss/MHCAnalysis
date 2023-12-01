@@ -1,8 +1,8 @@
 
 % Selection of total Population genotype 12
 
-S12_0 = 1000;
-I12_1a2a_0 = 0;
+S12_0 = 900;
+I12_1a2a_0 = 1;
 I12_1a2b_0 = 0;
 I12_1b2a_0 = 0;
 I12_1b2b_0 = 0;
@@ -39,7 +39,7 @@ M11_0 = 0;
 
 % Selection of total Population genotype 22
 
-S22_0 = 1000;
+S22_0 = 1050;
 I22_1a2a_0 = 0;
 I22_1a2b_0 = 0;
 I22_1b2a_0 = 0;
@@ -56,7 +56,7 @@ M22_0 = 0;
 
 % Selection of total Population genotype 33
 
-S33_0 = 1000;
+S33_0 = 800;
 I33_1a2a_0 = 0;
 I33_1a2b_0 = 0;
 I33_1b2a_0 = 0;
@@ -85,16 +85,16 @@ gamma_value = 1 / 14;
 sigma_value = 1 / 180;
 birth_rate = 0.00002;
 death_rate = 0.00002;
-beta_1a2a = 0.0001;
-beta_1a2b = 0.0003;
-beta_1b2a = 0.0005;
-beta_1b2b = 0.0005;
+beta_1a2a = 0.0005;
+beta_1a2b = 0.0007;
+beta_1b2a = 0.0007;
+beta_1b2b = 0.001;
 beta_values = [beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b];
 
 % Variables for for loops
-time_variable = [180 360 540 720];
-fraction_variable = [2 21 36 51];
-infected_incorporation = [1 1 1 1];
+time_variable = [180 360 540];
+fraction_variable = [20:23 34:37 48:51];
+infected_incorporation = [1 1 1];
 
 % Time span for simulation
 tspan=0:180;
@@ -110,7 +110,9 @@ ret1 = ode_solution.y;
 for i = 1:length(time_variable)
 
     y0_new = ret1(:, end);
-    y0_new (fraction_variable(i)) = infected_incorporation(i); 
+    randomIndex = randi(length(fraction_variable));
+    randomNumber = fraction_variable(randomIndex);
+    y0_new (randomNumber) = infected_incorporation(i); 
 
 % Solve the ODE again using the last entry as the initial condition
 
@@ -127,14 +129,16 @@ end
 
 % Plot the results
 % Creation of legend
-legend = {'S12', 'I12 1a2a', 'I12 1a2b', 'I12 1b2a', 'I12 1b2b', 'R12 1a2a', ...
+legend12 = {'S12', 'I12 1a2a', 'I12 1a2b', 'I12 1b2a', 'I12 1b2b', 'R12 1a2a', ...
     'R12 1a2b', 'R12 1b2a', 'R12 1b2b', 'H12 1a2a', 'H12 1a2b', 'H12 1b2a',...
-    'H12 1b2b', 'J12 1a2a', 'J12 1a2b', 'J12 1b2a', 'J12 1b2b', 'M12', 'S11',...
-    'I11 1a2a', 'I11 1a2b', 'I11 1b2a', 'I11 1b2b', 'R11 1a', 'R11 1b',...
+    'H12 1b2b', 'J12 1a2a', 'J12 1a2b', 'J12 1b2a', 'J12 1b2b', 'M12'};
+legend11 = {'S11','I11 1a2a', 'I11 1a2b', 'I11 1b2a', 'I11 1b2b', 'R11 1a', 'R11 1b',...
     'H11 1a', 'H11 1b', 'J11 1a2a', 'J11 1a2b', 'J11 1b2a', 'J11 1b2b',...
-    'M11', 'S22', 'I22 1a2a', 'I22 1a2b', 'I22 1b2a', 'I22 1b2b', 'R22 2a',...
+    'M11'};
+legend22 = {'S22', 'I22 1a2a', 'I22 1a2b', 'I22 1b2a', 'I22 1b2b', 'R22 2a',...
     'R22 2b', 'H22 2a', 'H22 2b', 'J22 1a2a', 'J22 1a2b', 'J22 1b2a',...
-    'J22 1b2b', 'M22', 'S33', 'I33 1a2a', 'I33 1a2b', 'I33 1b2a',...
+    'J22 1b2b', 'M22'};
+legend33 = {'S33', 'I33 1a2a', 'I33 1a2b', 'I33 1b2a',...
     'I33 1b2b', 'M33'};
 
 colors = {'#F00FFF','#00FFFF','#0080FF','#F0FFFF','#F080FF','#FF0000', ...
@@ -243,18 +247,15 @@ function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
     lambda1b2b = beta1b2b * (I12_1b2b + I11_1b2b + I22_1b2b + I33_1b2b + J12_1b2b + J11_1b2b + J22_1b2b);
 
 
-    tap = sum([S12, I12_1a2a, I12_1b2b, I12_1a2b, I12_1b2a, J12_1a2a, ...
-        J12_1a2b, J12_1b2a, J12_1b2b, R12_1a2a, R12_1a2b, R12_1b2a, ...
-        R12_1b2b, H12_1a2a, H12_1a2b, H12_1b2a, H12_1b2b, M12, S11, ...
-        I11_1a2a, I11_1b2b, I11_1a2b, I11_1b2a, J11_1a2a, J11_1a2b, ...
-        J11_1b2a, J11_1b2b, R11_1a, R11_1b, H11_1a, H11_1b, M11, S22, ...
-        I22_1a2a, I22_1b2b, I22_1a2b, I22_1b2a, J22_1a2a, J22_1a2b, ...
-        J22_1b2a, J22_1b2b, R22_2a, R22_2b, H22_2a, H22_2b, M22, S33, ...
-        I33_1a2a, I33_1b2b, I33_1a2b, I33_1b2a, M33]);
+    tap = sum(y);
+    prob12 = sum(y(1:18))/tap;
+    prob11 = sum(y(19:32))/tap;
+    prob22 = sum(y(33:46))/tap;
+    prob33 = sum(y(37:52))/tap;
 
     % Equations for genotype 12
     dydt = zeros(52, 1);
-    dydt(1) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S12 + birth * tap;
+    dydt(1) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S12 + birth * tap * prob12;
     dydt(2) = -(death + gamma) * I12_1a2a + lambda1a2a * S12;
     dydt(3) = -(death + gamma) * I12_1a2b + lambda1a2b * S12;
     dydt(4) = -(death + gamma) * I12_1b2a + lambda1b2a * S12;
@@ -271,10 +272,10 @@ function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
     dydt(15) = -(death + gamma) * J12_1a2b + lambda1a2b * H12_1b2a;
     dydt(16) = -(death + gamma) * J12_1b2a + lambda1b2a * H12_1a2b;
     dydt(17) = -(death + gamma) * J12_1b2b + lambda1b2b * H12_1a2a;
-    dydt(18) = -death * M12 + gamma * (J12_1a2a + J12_1b2a + J12_1a2b + J12_1b2b);
+    dydt(18) = -(death * M12) + gamma * (J12_1a2a + J12_1b2a + J12_1a2b + J12_1b2b);
 
     % Equations for genotype 11 (or 13)
-    dydt(19) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S11 + birth * tap;
+    dydt(19) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S11 + birth * tap * prob11;
     dydt(20) = -(death + gamma) * I11_1a2a + lambda1a2a * S11;
     dydt(21) = -(death + gamma) * I11_1a2b + lambda1a2b * S11;
     dydt(22) = -(death + gamma) * I11_1b2a + lambda1b2a * S11;
@@ -287,10 +288,10 @@ function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
     dydt(29) = -(death + gamma) * J11_1a2b + lambda1a2b * H11_1b;
     dydt(30) = -(death + gamma) * J11_1b2a + lambda1b2a * H11_1a;
     dydt(31) = -(death + gamma) * J11_1b2b + lambda1b2b * H11_1a;
-    dydt(32) = -death * M11 + gamma * (J11_1a2a + J11_1b2a + J11_1a2b + J11_1b2b);
+    dydt(32) = -(death * M11) + gamma * (J11_1a2a + J11_1b2a + J11_1a2b + J11_1b2b);
 
     % Equations for genotype 22 (or 32)
-    dydt(33) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S22 + birth * tap;
+    dydt(33) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S22 + birth * tap * prob22;
     dydt(34) = -(death + gamma) * I22_1a2a + lambda1a2a * S22;
     dydt(35) = -(death + gamma) * I22_1a2b + lambda1a2b * S22;
     dydt(36) = -(death + gamma) * I22_1b2a + lambda1b2a * S22;
@@ -303,10 +304,10 @@ function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
     dydt(43) = -(death + gamma) * J22_1a2b + lambda1a2b * H22_2a;
     dydt(44) = -(death + gamma) * J22_1b2a + lambda1b2a * H22_2b;
     dydt(45) = -(death + gamma) * J22_1b2b + lambda1b2b * H22_2a;
-    dydt(46) = -death * M22 + gamma * (J22_1a2a + J22_1b2a + J22_1a2b + J22_1b2b);
+    dydt(46) = -(death * M22) + gamma * (J22_1a2a + J22_1b2a + J22_1a2b + J22_1b2b);
 
     % Equations for genotype 33
-    dydt(47) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S33 + birth * tap + sigma * M33;
+    dydt(47) = -(death + lambda1a2a + lambda1a2b + lambda1b2a + lambda1b2b) * S33 + birth * tap * prob33 + sigma * M33;
     dydt(48) = -(death + gamma) * I33_1a2a + lambda1a2a * S33;
     dydt(49) = -(death + gamma) * I33_1a2b + lambda1a2b * S33;
     dydt(50) = -(death + gamma) * I33_1b2a + lambda1b2a * S33;
