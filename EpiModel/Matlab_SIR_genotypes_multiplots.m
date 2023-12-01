@@ -140,6 +140,9 @@ legend22 = ["S22 ", "I22 1a2a ", "I22 1a2b ", "I22 1b2a ", "I22 1b2b ", "R22 2a 
 legend33 = ["S33 ", "I33 1a2a ", "I33 1a2b ", "I33 1b2a ",...
     "I33 1b2b ", "M33 "];
 
+% Create cell array containing all the legend strings
+legends = {legend12, legend11, legend22, legend33};
+
 % Create subplots
 subplot(2, 2, 1);
 hold on;
@@ -148,12 +151,18 @@ xlabel('Time (days)');
 ylabel('Population');
 title('Population Dynamics for Genotype 12');
 
+% Add labels to the lines
+legend(legends{1});
+
 subplot(2, 2, 2);
 hold on;
 plot(t, ret1(19:32, :), 'LineWidth', 2);
 xlabel('Time (days)');
 ylabel('Population');
 title('Population Dynamics for Genotype 11');
+
+% Add labels to the lines
+legend(legends{2});
 
 subplot(2, 2, 3);
 hold on;
@@ -162,12 +171,18 @@ xlabel('Time (days)');
 ylabel('Population');
 title('Population Dynamics for Genotype 22');
 
+% Add labels to the lines
+legend(legends{3});
+
 subplot(2, 2, 4);
 hold on;
 plot(t, ret1(46:52, :), 'LineWidth', 2);
 xlabel('Time (days)');
 ylabel('Population');
 title('Population Dynamics for Genotype 33');
+
+% Add labels to the lines
+legend(legends{4});
 
 function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
 
