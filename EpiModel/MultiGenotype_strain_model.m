@@ -7,16 +7,19 @@ function MultiGenotype_strain_model(population, ratios, params)
     ratio22 = ratios(3);
     ratio33 = ratios(4);
 
-    beta_values = params(1);
-    time_new_strain = params(2);
-    time_simulation = params(3);
-    new_strain = params(4);
+    beta_values = params{1};
+    time_new_strain = params{2};
+    time_simulation = params{3};
+    new_strain = params{4};
+    seed = params{5};
+
+    rng(seed);
     
 
     % Selection of total Population genotype 12
     
     S12_0 = population * ratio12;
-    I12_1a2a_0 = 1;
+    I12_1a2a_0 = 0;
     I12_1a2b_0 = 0;
     I12_1b2a_0 = 0;
     I12_1b2b_0 = 0;
@@ -157,7 +160,6 @@ function MultiGenotype_strain_model(population, ratios, params)
     ret1 = cat(2, ret1, ret2);
     t = cat(2, t, t_new);
     
-
     
     % Plot the results
     legend12 = ["S12", "I12 1a2a ", "I12 1a2b ", "I12 1b2a ", "I12 1b2b ", "R12 1a2a ", ...
