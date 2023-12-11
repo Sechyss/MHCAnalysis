@@ -1,6 +1,6 @@
 proportions = zeros(10, 4);
 
-for i = 1:20
+for i = 1:100
     % Initialize randomNumbers and fourthNumber with zeros to enter the loop
     randomNumbers = zeros(1, 3);
     fourthNumber = 0;
@@ -17,11 +17,11 @@ for i = 1:20
 end
 
 Population = 10000;
-betavalues = [0.002 0.002 0.002 0.002];
+betavalues = [0.002 0.004 0.004 0.004];
 time_new = 200;
-Time_simulation = 400;
-new_Strain = '1b2a';
-seeds = 123;
+Time_simulation = 365*3;
+new_Strain = '1b2b';
+seeds = 1;
 parameters = {betavalues, time_new, Time_simulation, new_Strain seeds};
 
 peaks = zeros(52,  1);
@@ -29,52 +29,65 @@ peaks = zeros(52,  1);
 for i = 1:size(proportions, 1)
     clf;
     ratios = proportions(i, :);
-    [out, t] = MultiGenotype_strain_model(Population, ratios, parameters);
+    [out, t] = MultiGenotype_strain_model(Population, ratios, {betavalues, time_new, Time_simulation, new_Strain i});
     maxpeaks = max(out, [],2);
     peaks = cat(2, peaks, maxpeaks);
 end
 
-clf;
 peaks(:, 1) = [];
 
+clf;
+
+% subplot 1
 subplot(2,2,1);
 hold on;
-scatter(proportions(:, 1), peaks(2, :) + peaks(14, :), 'DisplayName','1a2a')
-scatter(proportions(:, 1), peaks(3, :) + peaks(15, :), 'DisplayName','1a2b')
-scatter(proportions(:, 1), peaks(4, :) + peaks(16, :), 'DisplayName','1b2a')
-scatter(proportions(:, 1), peaks(5, :) + peaks(17, :), 'DisplayName','1b2b')
+scatter(proportions(:, 1), peaks(2, :) + peaks(14, :), 50, 'red' , 'DisplayName','1a2a')
+scatter(proportions(:, 1), peaks(3, :) + peaks(15, :), 50, 'green', 'DisplayName','1a2b')
+scatter(proportions(:, 1), peaks(4, :) + peaks(16, :), 50, 'blue', 'DisplayName','1b2a')
+scatter(proportions(:, 1), peaks(5, :) + peaks(17, :), 50, 'magenta', 'DisplayName','1b2b')
 xlabel('Proportions');
 ylabel('Max infection');
 title('Infection dynamic for Genotype 12');
+legend('show');
 
+% subplot 2
 subplot(2,2,2);
 hold on;
-scatter(proportions(:, 2), peaks(20, :) + peaks(28, :), 'DisplayName','1a2a')
-scatter(proportions(:, 2), peaks(21, :) + peaks(29, :), 'DisplayName','1a2b')
-scatter(proportions(:, 2), peaks(22, :) + peaks(30, :), 'DisplayName','1b2a')
-scatter(proportions(:, 2), peaks(23, :) + peaks(31, :), 'DisplayName','1b2b')
+scatter(proportions(:, 2), peaks(20, :) + peaks(28, :), 50, 'red', 'DisplayName','1a2a')
+scatter(proportions(:, 2), peaks(21, :) + peaks(29, :), 50, 'green', 'DisplayName','1a2b')
+scatter(proportions(:, 2), peaks(22, :) + peaks(30, :), 50, 'blue', 'DisplayName','1b2a')
+scatter(proportions(:, 2), peaks(23, :) + peaks(31, :), 50, 'magenta', 'DisplayName','1b2b')
 xlabel('Proportions');
 ylabel('Max infection');
 title('Infection dynamic for Genotype 11');
+legend('show');
 
+% subplot 3
 subplot(2,2,3);
 hold on;
-scatter(proportions(:, 3), peaks(34, :) + peaks(42, :), 'DisplayName','1a2a')
-scatter(proportions(:, 3), peaks(35, :) + peaks(43, :), 'DisplayName','1a2b')
-scatter(proportions(:, 3), peaks(36, :) + peaks(44, :), 'DisplayName','1b2a')
-scatter(proportions(:, 3), peaks(37, :) + peaks(45, :), 'DisplayName','1b2b')
+scatter(proportions(:, 3), peaks(34, :) + peaks(42, :), 50, 'red', 'DisplayName','1a2a')
+scatter(proportions(:, 3), peaks(35, :) + peaks(43, :), 50, 'green', 'DisplayName','1a2b')
+scatter(proportions(:, 3), peaks(36, :) + peaks(44, :), 50, 'blue', 'DisplayName','1b2a')
+scatter(proportions(:, 3), peaks(37, :) + peaks(45, :), 50, 'magenta', 'DisplayName','1b2b')
 xlabel('Proportions');
 ylabel('Max infection');
 title('Infection dynamic for Genotype 22');
+legend('show');
 
+% subplot 4
 subplot(2,2,4);
 hold on;
-scatter(proportions(:, 4), peaks(48, :), 'DisplayName','1a2a')
-scatter(proportions(:, 4), peaks(49, :), 'DisplayName','1a2b')
-scatter(proportions(:, 4), peaks(50, :), 'DisplayName','1b2a')
-scatter(proportions(:, 4), peaks(51, :), 'DisplayName','1b2b')
+scatter(proportions(:, 4), peaks(48, :), 50, 'red', 'DisplayName','1a2a')
+scatter(proportions(:, 4), peaks(49, :), 50, 'green', 'DisplayName','1a2b')
+scatter(proportions(:, 4), peaks(50, :), 50, 'blue', 'DisplayName','1b2a')
+scatter(proportions(:, 4), peaks(51, :), 50, 'magenta', 'DisplayName','1b2b')
+xlabel('Proportions');
 ylabel('Max infection');
 title('Infection dynamic for Genotype 33');
+legend('show');
+
+% saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/1a2b_infection_200days.pdf')
+
 
 
 
