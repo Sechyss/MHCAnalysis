@@ -2,10 +2,10 @@ from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 
 fasta_file = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/'
-                         'Otherproteins/Muscle_alignment/Apical_full_kmer_filtered.fasta', 'fasta')
+                         'Otherproteins/Muscle_alignment/Thrombos_Nterminal_full_kmer_filtered.fasta', 'fasta')
 
 with open('/Users/u2176312/OneDrive - University of Warwick/'
-          'Otherproteins/Muscle_alignment/Apical_full_kmer_filtered_corrected.fasta', 'a') as f:
+          'Otherproteins/Muscle_alignment/Thrombos_Nterminal_full_kmer_filtered_corrected.fasta', 'a') as f:
 
     for seq_record in fasta_file:
         sequence_id = seq_record.id

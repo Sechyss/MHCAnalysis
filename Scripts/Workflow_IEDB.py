@@ -98,7 +98,7 @@ def main():
         peptide_sequence = seq_record.seq
         dictionary_sequences.update({sequence_id: peptide_sequence})
 
-    collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Epitope'])
+    collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Epitope', 'C-terminal aa'])
 
     print('Analyzing the sequences in the dictionary mhc data')
     for key in tqdm(mhc_dict.keys()):
@@ -107,7 +107,8 @@ def main():
                                        'Allele': mhc_dict[key][0][element],
                                        'Starting aa': mhc_dict[key][1][element],
                                        'Ending aa': mhc_dict[key][2][element],
-                                       'Epitope': mhc_dict[key][3][element]}, index=[0])
+                                       'Epitope': mhc_dict[key][3][element],
+                                       'C-terminal aa': mhc_dict[key][4][element]}, index=[0])
             collectordf = pd.concat([row_to_add, collectordf.loc[:]]).reset_index(drop=True)
 
     # Preparation of the final dataframe which contains all the relevant data

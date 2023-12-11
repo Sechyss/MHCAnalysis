@@ -1,11 +1,12 @@
-function MultiGenotype_strain_model(population, ratios, params)
+function [outputTable, Timescale] = MultiGenotype_strain_model(population, ratios, params)
+    
 
     % Unpacking of the data 
     
-    ratio12 = ratios(1);
-    ratio11 = ratios(2);
-    ratio22 = ratios(3);
-    ratio33 = ratios(4);
+    ratio12 = ratios(1)/sum(ratios);
+    ratio11 = ratios(2)/sum(ratios);
+    ratio22 = ratios(3)/sum(ratios);
+    ratio33 = ratios(4)/sum(ratios);
 
     beta_values = params{1};
     time_new_strain = params{2};
@@ -100,13 +101,13 @@ function MultiGenotype_strain_model(population, ratios, params)
 
     randomIndex = randi(length(starting_infection));
     randomNumber = starting_infection(randomIndex);
-    y0(randomNumber) = randi(10); 
+    y0(randomNumber) = 1; 
     
     % Parameters
     gamma_value = 1 / 14;
     sigma_value = 1 / 180;
-    birth_rate = 0.00002;
-    death_rate = 0.00002; 
+    birth_rate = 0.00004;
+    death_rate = 0.00004; 
     
     % Time span for simulation
     tspan=0:time_new_strain;
@@ -129,7 +130,7 @@ function MultiGenotype_strain_model(population, ratios, params)
         randomIndex = randi(length(new_infection));
         randomNumber = new_infection(randomIndex);
 
-        y0_new(randomNumber) = randi(10); 
+        y0_new(randomNumber) = 1; 
     
     elseif strcmpi(new_strain, '1b2a')
         new_infection = [4 22 36 50];
@@ -137,7 +138,7 @@ function MultiGenotype_strain_model(population, ratios, params)
         randomIndex = randi(length(new_infection));
         randomNumber = new_infection(randomIndex);
 
-        y0_new(randomNumber) = randi(10);
+        y0_new(randomNumber) = 1;
     
     elseif strcmpi(new_strain, '1b2b')
         new_infection = [5 23 37 51];
@@ -145,7 +146,7 @@ function MultiGenotype_strain_model(population, ratios, params)
         randomIndex = randi(length(new_infection));
         randomNumber = new_infection(randomIndex);
 
-        y0_new(randomNumber) = randi(10);
+        y0_new(randomNumber) = 1;
     
     end
     
@@ -159,6 +160,9 @@ function MultiGenotype_strain_model(population, ratios, params)
     % Combine the results from the two simulations
     ret1 = cat(2, ret1, ret2);
     t = cat(2, t, t_new);
+
+    outputTable = ret1;
+    Timescale = t;
     
     
     % Plot the results

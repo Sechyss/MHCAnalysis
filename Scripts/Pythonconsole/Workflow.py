@@ -13,7 +13,7 @@ columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatch
 
 #  Blastp result table related to human recognition only focusing those not similar to human peptides
 Blastp_human_recognition = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
-                                         'CSP/Humanrecogn/Human_Malaria_NCBI_blastp.tsv', header=None)
+                                         'Otherproteins/BLASTP_results/Blastp_Human_CSP_Nterminal.tsv', header=None)
 Blastp_human_recognition.columns = columns
 
 # Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
@@ -24,9 +24,10 @@ Blastp_human_recognition = Blastp_human_recognition[Blastp_human_recognition['% 
 HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
-Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                          'NCBI_CSP/resultsPredictionBinding_NCBI_only_TopABC/'
-                          'NCBI_TopABC_all_lengths_NCBIseqs.txt', sep='\t')
+Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
+                          'IEDB_prediction/NCBI_NterminalCSP_IEDB.tsv', sep='\t')
+Table_mhc.dropna(how='all', inplace=True)
+Table_mhc['seq_num'] = Table_mhc['seq_num'].astype(int)
 
 # Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
 #                          'NCBI_CSP/resultsPredictionBinding_NCBI_ALL/'
@@ -46,10 +47,9 @@ for index, row in Table_mhc.iterrows():
         mhc_dict[row['seq_num']][4].append(str(row['peptide'])[-1])
 
 # Read blastp result table from a TSV file into a Pandas DataFrame
-Table_blastp_Pf3D7 = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'
-                                   'NCBI_CSP/Blastp_NCBI_Pf3D7.tsv', sep='\t', header=None)
+Table_blastp_Pf3D7 = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
+                                   'BLASTP_results/Blastp_Testing_CSP_Nterminal.tsv', sep='\t', header=None)
 Table_blastp_Pf3D7.columns = columns  # Assign column names
-Table_blastp_Pf3D7 = Table_blastp_Pf3D7[Table_blastp_Pf3D7['s. start'] > 270]
 
 Table_blastp_Pf3D7['Absolute start'] = ''
 Table_blastp_Pf3D7['Absolute end'] = ''
@@ -66,7 +66,8 @@ Table_blastp_Pf3D7 = Table_blastp_Pf3D7.drop(['subject id', 'alignment length',
                                               'bit score', 'gap opens', 'evalue'], axis=1)
 
 # Read Netchop result table from a CSV file
-NetchopTable = pd.read_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/Netchop/result_CSP_Pf3D7_netchop.csv')
+NetchopTable = pd.read_csv('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
+                           'Netchop_results/Netchop_CSP_full.csv')
 
 # Create a dictionary to store Netchop data for each '#'
 netchop_dict = {}
@@ -75,8 +76,8 @@ for index, row in NetchopTable.iterrows():
 
 # Creation of sequence dictionary
 
-fastafile = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/'
-                        'NCBI_CSP_peptides_11kmer_filtered.fasta', 'fasta')
+fastafile = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
+                        'Muscle_alignment/NCBI_CSP_Nterminal_full_kmer_filtered.fasta', 'fasta')
 
 dictionary_sequences = {}
 
@@ -142,8 +143,6 @@ for index, row in final_df.iterrows():
 # final_df.to_csv('/Users/u2176312/OneDrive - University of Warwick/CSP/NCBI_CSP/AllelePopNCBI_Workflow/'
 #                'Cterminalmatches_location.csv', index=False)
 
-#final_df = final_df[(final_df['Sequence'] > 287) | (final_df['Sequence'] < 283)]
-
 # %% Plotting of the results
 
 final_df.dropna(subset=['Absolute start'], inplace=True)
@@ -203,33 +202,50 @@ for country in tqdm(result_dict.keys()):
     startingkmer = final_df['Absolute start'].min()
     endingkmer = startingkmer + 11
 
-    # number_alleles_full = len(set(countryDF['Sequence'].to_list()))
-    # number_variants_full = len(set(final_df['Sequence'].to_list()))
-
     while startingkmer <= final_df['Absolute start'].max():
         x_axis.append('Kmer_' + str(int(startingkmer)) + '_' + str(int(endingkmer)))  # Creation the kmer axis
 
         tempdf = countryDF[countryDF['Absolute start'] == startingkmer]  # Filtering the country df to the kmer axis
-        alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
-        sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
-        hla_recognition.append(len(alleles))
+        temp_list = tempdf['Absolute start'].tolist()
+        if len(temp_list) > 0:
+            alleles = list(set(tempdf['Allele'].to_list()))  # List of HLAs in the countrydf
+            sequences_country = set(tempdf['Sequence'].to_list())  # List of variation in the selected countrydf
+            hla_recognition.append(len(alleles))
+            sequences_recognition.append(len(sequences_country))
+        else:
+            hla_recognition.append(0)
+            sequences_recognition.append(0)
 
         tempdf2 = Filtered_df[Filtered_df['Absolute start'] == startingkmer]  # selection of the filtered df to kmer
-        sequences = set(tempdf2['Sequence'].to_list())
-        number_variants.append(len(sequences))
+        temp_list = tempdf2['Absolute start'].tolist()
+        if len(temp_list) > 0:
+            sequences = set(tempdf2['Sequence'].to_list())
+            number_variants.append(len(sequences))
+        else:
+            number_variants.append(0)
 
         tempdf3 = final_df[final_df['Absolute start'] == startingkmer]
-        variations = set(tempdf3['Sequence'].astype(str).to_list())
-        min_similarity_hum_peptidome.append(min(set(tempdf3['% identity with human peptidome'].to_list())))
-        max_similarity_hum_peptidome.append(max(set(tempdf3['% identity with human peptidome'].to_list())))
-        average_similarity_hum_peptidome.append((sum(set(tempdf3['% identity with human peptidome'].to_list())) /
-                                                 len(set(tempdf3['% identity with human peptidome'].to_list()))))
+        temp_list = tempdf3['Absolute start'].tolist()
+        if len(temp_list) > 0:
+            variations = set(tempdf3['Sequence'].astype(str).to_list())
+            min_similarity_hum_peptidome.append(min(set(tempdf3['% identity with human peptidome'].to_list())))
+            max_similarity_hum_peptidome.append(max(set(tempdf3['% identity with human peptidome'].to_list())))
+            average_similarity_hum_peptidome.append(
+                (sum(set(tempdf3['% identity with human peptidome'].to_list())) /
+                 len(set(tempdf3['% identity with human peptidome'].to_list()))))
 
-        sequences_recognition.append(len(sequences_country))
-        number_variations.append(len(variations))
+            number_variations.append(len(variations))
+
+        else:
+            min_similarity_hum_peptidome.append(0)
+            max_similarity_hum_peptidome.append(0)
+            average_similarity_hum_peptidome.append(0)
+
+            number_variations.append(0)
 
         startingkmer += 1
         endingkmer += 1
+
     new_df.index = x_axis
     new_df2.index = x_axis
     new_df['Sequences with C-terminal / NonHuman'] = number_variants
