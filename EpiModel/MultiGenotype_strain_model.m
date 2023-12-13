@@ -110,11 +110,11 @@ function [outputTable, Timescale] = MultiGenotype_strain_model(population, ratio
     death_rate = 0.00004; 
     
     % Time span for simulation
-    tspan=0:time_new_strain;
+    tspan=0:2:time_new_strain;
     
     
     % Solve ODE
-    options = odeset('RelTol', 1e-8, 'AbsTol', 1e-8, 'NonNegative',1:52);
+    options = odeset('AbsTol', 1e-14, 'NonNegative',1:52);
     ode_solution = ode45(@(t, y) deriv_equations(y, beta_values, gamma_value, sigma_value, death_rate, birth_rate), tspan, y0, options);
     
     t = ode_solution.x;
@@ -152,7 +152,7 @@ function [outputTable, Timescale] = MultiGenotype_strain_model(population, ratio
     
     % Solve the ODE again using the last entry as the initial condition
 
-    tspan = time_new_strain:time_simulation;
+    tspan = time_new_strain:2:time_simulation;
     ode_solution_new = ode45(@(t, y) deriv_equations(y, beta_values, gamma_value, sigma_value, death_rate, birth_rate), tspan, y0_new, options);
     t_new = ode_solution_new.x;
     ret2 = ode_solution_new.y;
@@ -214,7 +214,7 @@ function [outputTable, Timescale] = MultiGenotype_strain_model(population, ratio
     
     subplot(2, 2, 4);
     hold on;
-    plot(t, ret1(46:52, :), 'LineWidth', 2);
+    plot(t, ret1(47:52, :), 'LineWidth', 2);
     xlabel('Time (days)');
     ylabel('Population');
     title('Population Dynamics for Genotype 33');
