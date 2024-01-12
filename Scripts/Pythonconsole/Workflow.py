@@ -25,8 +25,9 @@ HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
-                          'IEDB_prediction/NCBI_Thrombos_full_IEDB.tsv', sep='\t')
+                          'IEDB_prediction/NCBI_Liverantigen1_Nterminal_IEDB.tsv', sep='\t')
 Table_mhc.dropna(how='all', inplace=True)
+Table_mhc = Table_mhc[Table_mhc['rank'] != 'rank']
 Table_mhc['seq_num'] = Table_mhc['seq_num'].astype(int)
 
 # Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/'

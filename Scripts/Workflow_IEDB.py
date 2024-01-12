@@ -46,6 +46,7 @@ def main():
 
     # Read a table of MHC data from a TSV file
     Table_mhc = pd.read_table(args.mhcpred, sep='\t')
+    Table_mhc = Table_mhc[Table_mhc['rank'] != 'rank']
     Table_mhc.dropna(how='all', inplace=True)
     Table_mhc['seq_num'] = Table_mhc['seq_num'].astype(int)
 
