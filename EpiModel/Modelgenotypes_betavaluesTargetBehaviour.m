@@ -26,6 +26,26 @@ for i = 1:numSamples
     betavalues(i, :) = randomNumbers;
 end
 
+%% Ratios of beta values
+ratio1a2b = betavalues(:, 2) ./ betavalues (:, 1);
+min_value = min(ratio1a2b);
+max_value = max(ratio1a2b);
+
+normalized_ratio1a2b = (ratio1a2b - min_value) / (max_value - min_value);
+
+
+ratio1b2a = betavalues(:, 3) ./ betavalues (:, 1);
+min_value = min(ratio1b2a);
+max_value = max(ratio1b2a);
+
+normalized_ratio1b2a = (ratio1b2a - min_value) / (max_value - min_value);
+
+ratio1b2b = betavalues(:, 4) ./ betavalues (:, 1);
+min_value = min(ratio1b2b);
+max_value = max(ratio1b2b);
+
+normalized_ratio1b2b = (ratio1b2b - min_value) / (max_value - min_value);
+
 
 %% Run the model
 
@@ -48,18 +68,40 @@ peaks(1, :) = [];
 figure;
 
 hold on;
-scatter(betavalues(:, 1), peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a')
-scatter(betavalues(:, 2), peaks(:,2), 50, 'green', 'o', 'DisplayName','1a2b')
-scatter(betavalues(:, 3), peaks(:,3), 50, 'blue', 'o', 'DisplayName','1b2a')
-scatter(betavalues(:, 4), peaks(:,4), 50, 'magenta', 'o', 'DisplayName','1b2b')
+scatter(betavalues(:, 1), peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a');
+scatter(betavalues(:, 2), peaks(:,2), 50, 'green', 'o', 'DisplayName','1a2b');
+scatter(betavalues(:, 3), peaks(:,3), 50, 'blue', 'o', 'DisplayName','1b2a');
+scatter(betavalues(:, 4), peaks(:,4), 50, 'magenta', 'o', 'DisplayName','1b2b');
 
-xlabel('Beta values')
+xlabel('Beta values');
+ylabel('Max peak of infection');
+legend('show');
+
+hold off;
+
+%saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/1a2b_infection_200days_combined_betavalues.pdf')
+
+%% Plotting of the results of the peaks by the ratios of the beta values
+    
+figure;
+
+hold on;
+if strcmpi(new_Strain, '1a2b')
+    scatter(normalized_ratio1a2b, peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a');
+    scatter(normalized_ratio1a2b, peaks(:,2), 50, 'green', 'o', 'DisplayName','1a2b');
+elseif strcmp (new_Strain, '1b2a')
+    scatter(normalized_ratio1b2a, peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a');
+    scatter(normalized_ratio1b2a, peaks(:,3), 50, 'blue', 'o', 'DisplayName','1b2a');
+elseif strcmp (new_Strain, '1b2b')
+    scatter(normalized_ratio1b2b, peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a');
+    scatter(normalized_ratio1b2b, peaks(:,3), 50, 'magenta', 'o', 'DisplayName','1b2b');
+end
+
+
+xlabel('Beta value ratios')
 ylabel('Max peak of infection')
 legend('show')
 
 hold off
 
 %saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/1a2b_infection_200days_combined_betavalues.pdf')
-
-
-    
