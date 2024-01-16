@@ -94,7 +94,7 @@ elseif strcmp (new_Strain, '1b2a')
     scatter(normalized_ratio1b2a, peaks(:,3), 50, 'blue', 'o', 'DisplayName','1b2a');
 elseif strcmp (new_Strain, '1b2b')
     scatter(normalized_ratio1b2b, peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a');
-    scatter(normalized_ratio1b2b, peaks(:,3), 50, 'magenta', 'o', 'DisplayName','1b2b');
+    scatter(normalized_ratio1b2b, peaks(:,4), 50, 'magenta', 'o', 'DisplayName','1b2b');
 end
 
 

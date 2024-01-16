@@ -53,17 +53,13 @@ peaks(1, :) = [];
 figure;
 hold on;
 
-% Select the column of one of the genotypes to study 1 is Genotype 12, 
-% 2 is 11, 3 is 22, and 4 is 33.
 scatter(proportions(:,2), peaks(:,1), 50, 'red' , 'o', 'DisplayName','1a2a');
 scatter(proportions(:,2), peaks(:,2), 50, 'green', 'o', 'DisplayName','1a2b');
 scatter(proportions(:,2), peaks(:,3), 50, 'blue', 'o', 'DisplayName','1b2a');
 scatter(proportions(:,2), peaks(:,4), 50, 'magenta', 'o', 'DisplayName','1b2b');
 
 
-% Label the xlabel based on the genotypes, 1 is Genotype 12, 2 is 11, 3 is
-% 22, and 4 is 33.
-xlabel('Ratio of Genotype' )
+xlabel('Ratio of Genotype', ))
 ylabel('Max peak of infection')
 legend('show')
 
