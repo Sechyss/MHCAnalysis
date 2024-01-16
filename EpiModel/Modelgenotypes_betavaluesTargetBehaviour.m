@@ -1,7 +1,7 @@
 %% Establish the parameters of the model
 Population = 10000;
 proportions = [0.25 0.25 0.25 0.25];
-time_new = 300;
+time_new = 200;
 Time_simulation = 365*3;
 new_Strain = '1b2a';
 
@@ -12,7 +12,7 @@ seeds = 123;
 rng(seeds);
 
 % Initialize variables
-numSamples = 100;
+numSamples = 1000;
 betavalues = zeros(numSamples, 4);
 
 % Define valid ranges for each element
@@ -79,7 +79,7 @@ legend('show');
 
 hold off;
 
-%saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/1a2b_infection_200days_combined_betavalues.pdf')
+saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/Betatesting/1b2a_infection_200days_combined_betavalues.pdf')
 
 %% Plotting of the results of the peaks by the ratios of the beta values
     
@@ -98,10 +98,10 @@ elseif strcmp (new_Strain, '1b2b')
 end
 
 
-xlabel('Beta value ratios')
+xlabel(['Ratio of betavalues ', new_Strain, '/1a2a']);                              
 ylabel('Max peak of infection')
 legend('show')
 
 hold off
 
-%saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/1a2b_infection_200days_combined_betavalues.pdf')
+saveas(gcf, '/Users/u2176312/OneDrive - University of Warwick/Model/New Model/Betatesting/1b2a_infection_200days_ratiobetavalues.pdf')

@@ -221,6 +221,8 @@ function [outputTable, Timescale] = MultiGenotype_strain_model(population, ratio
     
     % Add labels to the lines
     legend(legends{4});
+
+    hold off;
     
     function dydt = deriv_equations(y, beta_values, gamma, sigma, death, birth)
     
