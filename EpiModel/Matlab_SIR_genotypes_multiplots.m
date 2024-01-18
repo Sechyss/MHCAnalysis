@@ -39,7 +39,7 @@ M11_0 = 0;
 
 % Selection of total Population genotype 22
 
-S22_0 = 1050;
+S22_0 = 0;
 I22_1a2a_0 = 0;
 I22_1a2b_0 = 0;
 I22_1b2a_0 = 0;
@@ -85,10 +85,10 @@ gamma_value = 1 / 14;
 sigma_value = 1 / 180;
 birth_rate = 0.00002;
 death_rate = 0.00002;
-beta_1a2a = 0.0005;
-beta_1a2b = 0.0007;
-beta_1b2a = 0.0007;
-beta_1b2b = 0.001;
+beta_1a2a = 0.000015;
+beta_1a2b = 0.000015;
+beta_1b2a = 0.000015;
+beta_1b2b = 0.000015;
 beta_values = [beta_1a2a, beta_1a2b, beta_1b2a, beta_1b2b];
 
 % Variables for for loops
