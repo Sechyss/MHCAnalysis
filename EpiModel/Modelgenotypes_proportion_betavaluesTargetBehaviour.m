@@ -1,7 +1,24 @@
+betavalues = [0.000015 0.000015 0.000015 0.000015];
+factor_beta = {0.5; 0.75; 1; 2; 3; 4; 5};
+
+for increasebeta = 1:size(factor_beta,1)
+    
 strains = {'1a2b'; '1b2a' ;'1b2b'};
 for infection= 1:size(strains, 1)
-     next_infection = strains{infection};
-     disp(['Working on ', next_infection])
+    next_infection = strains{infection};
+    newbetavalues = betavalues;
+    changebetavalue = factor_beta{increasebeta};
+
+    disp(['Working on ', next_infection, ' and by ', num2str(changebetavalue), 'X'])
+
+    if strcmpi(next_infection, '1a2b')
+        newbetavalues(2) = newbetavalues(2)*changebetavalue;
+    elseif strcmp (next_infection, '1b2a')
+        newbetavalues(3) = newbetavalues(3)*changebetavalue;
+    elseif strcmp (next_infection, '1b2b')
+        newbetavalues(4) = newbetavalues(4)*changebetavalue;
+    end
+
 
     % Preparation of parameters
     
@@ -32,12 +49,12 @@ for infection= 1:size(strains, 1)
         end
         
         Population = 10000;
-        betavalues = [0.000015 0.000015 0.000015 0.000015];
+        
         time_new = 200;
         Time_simulation = 365*3;
         new_Strain = next_infection;
         
-        parameters = {betavalues, time_new, Time_simulation, new_Strain seeds};
+        parameters = {newbetavalues, time_new, Time_simulation, new_Strain seeds};
         
         peaks = zeros(1, 4);
         
@@ -46,7 +63,7 @@ for infection= 1:size(strains, 1)
         for z = 1:size(proportions, 1)
             clf;
             ratios = proportions(z, :);
-            [out, t] = MultiGenotype_strain_model(Population, ratios, {betavalues, time_new, Time_simulation, new_Strain z});
+            [out, t] = MultiGenotype_strain_model(Population, ratios, {newbetavalues, time_new, Time_simulation, new_Strain z});
             sum1a2a = max(out(2, :)+ out(14,:)+ out(20, :)+ out(28,:)+ out(34, :)+ out(42,:)+out(48, :));
             sum1a2b = max(out(3, :)+ out(15,:)+ out(21, :)+ out(29,:)+ out(35, :)+ out(43,:)+out(49, :));
             sum1b2a = max(out(4, :)+ out(16,:)+ out(22, :)+ out(30,:)+ out(36, :)+ out(44,:)+out(50, :));
@@ -95,8 +112,9 @@ for infection= 1:size(strains, 1)
     
     hold off
     
-    saveas(gcf, ['/Users/u2176312/OneDrive - University of Warwick/Model/New Model/Betatesting/',new_Strain, '_infection_200days_Genotype_ratios.pdf'])
+    saveas(gcf, ['/Users/u2176312/OneDrive - University of Warwick/Model/New Model/Betatesting/Combination/', num2str(changebetavalue), 'X_',new_Strain, '_infection_200days_Genotype_ratios.pdf'])
 
+    close('all')
 end
 
-close('all')
+end
