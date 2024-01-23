@@ -1,7 +1,8 @@
+#!/bin/bash
 #SBATCH --ntasks-per-node=48
 #SBATCH --mem-per-cpu=3700
 #SBATCH --time=48:00:00
-#SBATCH --job-name=Thrombos
+#SBATCH --job-name=Liver1N
 
 ### Clear modules:
 module purge;
@@ -18,18 +19,18 @@ HLAS=("HLA-B*40:06" "HLA-B*44:02" "HLA-A*02:01" "HLA-B*51:01" "HLA-B*56:01" "HLA
 predict_binding() {
 hla=$1
 echo "Working on ${hla}."
-output_file="../resultsPredictionBinding_CSP/${hla}_length8.txt"
-output_file2="../resultsPredictionBinding_CSP/${hla}_length9.txt"
-output_file3="../resultsPredictionBinding_CSP/${hla}_length10.txt"
-output_file4="../resultsPredictionBinding_CSP/${hla}_length11.txt"
+output_file="../resultsPredictionBinding_Liverstage1/${hla}_length8.txt"
+output_file2="../resultsPredictionBinding_Liverstage1/${hla}_length9.txt"
+output_file3="../resultsPredictionBinding_Liverstage1/${hla}_length10.txt"
+output_file4="../resultsPredictionBinding_Liverstage1/${hla}_length11.txt"
 if [ -f "$output_file" ]; then
         echo "Output file $output_file already exists. Skipping to next HLA."
         return  # Exit the function and move to the next iteration
 fi
-./src/predict_binding.py netmhcpan_el "$hla" 8 ../Sequences/NCBI_CSP_full_kmer_filtered.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file"
-./src/predict_binding.py netmhcpan_el "$hla" 9 ../Sequences/NCBI_CSP_full_kmer_filtered.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file2"
-./src/predict_binding.py netmhcpan_el "$hla" 10 ../Sequences/NCBI_CSP_full_kmer_filtered.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file3"
-./src/predict_binding.py netmhcpan_el "$hla" 11 ../Sequences/NCBI_CSP_full_kmer_filtered.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file4"
+./src/predict_binding.py netmhcpan_el "$hla" 8 ../Sequences_otherproteins/Liverstageantigen1_Nterminal_kmer_filtered_corrected.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file"
+./src/predict_binding.py netmhcpan_el "$hla" 9 ../Sequences_otherproteins/Liverstageantigen1_Nterminal_kmer_filtered_corrected.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file2"
+./src/predict_binding.py netmhcpan_el "$hla" 10 ../Sequences_otherproteins/Liverstageantigen1_Nterminal_kmer_filtered_corrected.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file3"
+./src/predict_binding.py netmhcpan_el "$hla" 11 ../Sequences_otherproteins/Liverstageantigen1_Nterminal_kmer_filtered_corrected.fasta | awk -F"\t" 'NR==1 || $10 <=1' > "$output_file4"
 }
 export -f predict_binding
 for hla in "${HLAS[@]}"; do
