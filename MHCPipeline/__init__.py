@@ -1,1 +1,1 @@
-from .Utils import generate_combinations, transformmhclist
+from .Utils import generate_combinations, transformmhclist, flatten_array

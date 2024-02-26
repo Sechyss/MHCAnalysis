@@ -1,9 +1,9 @@
-time_new_infection = {20; 50; 100; 200; 300; 500};
+time_new_infection = {20; 50; 100; 200; 300};
 
 parfor new_infection_time = 1:size(time_new_infection, 1)
 
 betavalues = [0.000015 0.000015 0.000015 0.000015];
-factor_beta = {0.5; 0.75; 1; 2; 3; 4; 5};
+factor_beta = {0.5; 0.75; 1; 2};
 
 for increasebeta = 1:size(factor_beta,1)
     

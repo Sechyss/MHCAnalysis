@@ -57,3 +57,13 @@ def generate_combinations(ref_seq, snp_dict):
         combinations = new_combinations
 
     return combinations
+
+
+def flatten_array(arr):
+    flattened = []
+    for item in arr:
+        if isinstance(item, list):
+            flattened.extend(flatten_array(item))
+        else:
+            flattened.append(item)
+    return flattened
