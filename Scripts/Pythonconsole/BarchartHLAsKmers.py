@@ -30,14 +30,14 @@ number_variants = Kenya_region['Variants'].to_numpy()
 def extractionofpercentages(dictionary):  # Function will calculate the number of HLAs that recognise the Kmers
     list_percentages = []  # Empty object to store the information
     values = list(dictionary.values())  # Extraction of the values from the dictionary
-    total_values = list(set(item for sublist in values for item in sublist))  # Flatten the list of values
-    total_values.sort()  # Sort the list in order
+    total_values = list(set(item for sublist in values for item in sublist))  # Flatten the coordinates of values
+    total_values.sort()  # Sort the coordinates in order
     counter = 0
     for ids in number_variants:
-        list_ids = range(counter, ids + counter)  # Create the list of ranges which represent the IDs
+        list_ids = range(counter, ids + counter)  # Create the coordinates of ranges which represent the IDs
         hits = 0
         for seqid in list_ids:  # Run through the IDs
-            if seqid in total_values:  # If an ID is found in an HLA list it will add up to the hit counter
+            if seqid in total_values:  # If an ID is found in an HLA coordinates it will add up to the hit counter
                 hits += 1
         percentage_of_hits = round((hits/ids * 100), 2)  # Normalize based on the total number of possibilities
         list_percentages.append(percentage_of_hits)

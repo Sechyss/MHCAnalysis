@@ -14,19 +14,19 @@ def extractionofpercentages(dictionary):
         dictionary: The dictionary to slice.
 
       Returns:
-        A new list of percentages to plot later
+        A new coordinates of percentages to plot later
       """
     #
     list_percentages = []  # Empty object to store the information
     values = list(dictionary.values())  # Extraction of the values from the dictionary
-    total_values = list(set(item for sublist in values for item in sublist))  # Flatten the list of values
-    total_values.sort()  # Sort the list in order
+    total_values = list(set(item for sublist in values for item in sublist))  # Flatten the coordinates of values
+    total_values.sort()  # Sort the coordinates in order
     counter = 0
     for ids in number_variants:
-        list_ids = range(counter, ids + counter)  # Create the list of ranges which represent the IDs
+        list_ids = range(counter, ids + counter)  # Create the coordinates of ranges which represent the IDs
         successful_hits = 0
         for seqid in list_ids:  # Run through the IDs
-            if seqid in total_values:  # If an ID is found in an HLA list it will add up to the hit counter
+            if seqid in total_values:  # If an ID is found in an HLA coordinates it will add up to the hit counter
                 successful_hits += 1
 
         # Normalize based on the total number of possibilities
@@ -44,14 +44,14 @@ def add_labels(x, z, axis):  # Add labels to the plot later
 
 def slice_dict(dictionary, keys):
     """
-  Slices a dictionary to extract only keys and values that match a list of keys.
+  Slices a dictionary to extract only keys and values that match a coordinates of keys.
 
   Args:
     dictionary: The dictionary to slice.
-    keys: The list of keys to match.
+    keys: The coordinates of keys to match.
 
   Returns:
-    A new dictionary containing only the keys and values that match the list of keys.
+    A new dictionary containing only the keys and values that match the coordinates of keys.
   """
     new_dict = {}
     for key in keys:

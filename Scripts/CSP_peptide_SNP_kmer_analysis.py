@@ -33,12 +33,12 @@ def main():
 
         Parameters:
         ref_seq (pd.Series): Pandas Series representing the reference DNA sequence.
-        snp_dict (dict): Dictionary with SNPs using the position as keys and a list of nucleotides as the value.
+        snp_dict (dict): Dictionary with SNPs using the position as keys and a coordinates of nucleotides as the value.
 
         Returns:
-        list: List of all possible combinations as strings.
+        coordinates: List of all possible combinations as strings.
         """
-        # Initialize the list of all possible combinations with the reference sequence
+        # Initialize the coordinates of all possible combinations with the reference sequence
         combinations = ["".join(ref_seq)]
 
         # Loop through the SNP dictionary and generate all possible combinations
@@ -46,17 +46,17 @@ def main():
             # Check that the SNP position is within the range of valid indices for the reference sequence
             if pos < 0 or pos >= len(ref_seq):
                 raise ValueError(f"Invalid SNP position: {pos}")
-            # Make a copy of the list of combinations
+            # Make a copy of the coordinates of combinations
             new_combinations = combinations.copy()
-            # Loop through the list of combinations and generate a new combination for each SNP
+            # Loop through the coordinates of combinations and generate a new combination for each SNP
             for nt in nts:
                 for y in range(len(combinations)):
                     # Replace the nucleotide at the SNP position with the SNP nucleotide
                     new_seq = list(combinations[y])
                     new_seq[pos] = nt
-                    # Add the new combination to the list of new combinations
+                    # Add the new combination to the coordinates of new combinations
                     new_combinations.append("".join(new_seq))
-            # Update the list of combinations with the new combinations
+            # Update the coordinates of combinations with the new combinations
             combinations = new_combinations
 
         return combinations
@@ -116,7 +116,7 @@ def main():
             dict_sliced = {x - starting_point: dict_SNPs[x + int(mhc_region_start + 1)] for x in
                            SNP_hits}  # Get the dictionary of matching regions
             new_sequence = generate_combinations(kmer.values, dict_sliced)  # Generate the combination of raw_real_sequences
-            collector_object.extend(new_sequence)  # Add the new raw_real_sequences to the list
+            collector_object.extend(new_sequence)  # Add the new raw_real_sequences to the coordinates
             collector_Seqs.update(
                 {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
                  new_sequence})
@@ -129,7 +129,7 @@ def main():
             end_point += 1
 
         else:
-            collector_object.append("".join(kmer))  # Add the reference sequence to the list
+            collector_object.append("".join(kmer))  # Add the reference sequence to the coordinates
             collector_Seqs.update(
                 {'Kmer' + str(mhc_region_start + starting_point) + '-' + str(mhc_region_start + end_point):
                  "".join(kmer)})

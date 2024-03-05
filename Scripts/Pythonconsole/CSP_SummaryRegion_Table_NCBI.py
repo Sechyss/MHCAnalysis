@@ -7,14 +7,14 @@ from Bio import SeqIO
 
 def slice_dict(dictionary, keys):
     """
-  Slices a dictionary to extract only keys and values that match a list of keys.
+  Slices a dictionary to extract only keys and values that match a coordinates of keys.
 
   Args:
     dictionary: The dictionary to slice.
-    keys: The list of keys to match.
+    keys: The coordinates of keys to match.
 
   Returns:
-    A new dictionary containing only the keys and values that match the list of keys.
+    A new dictionary containing only the keys and values that match the coordinates of keys.
   """
     new_dict = {}
     for key2 in keys:
