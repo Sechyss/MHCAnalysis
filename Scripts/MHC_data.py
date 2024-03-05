@@ -19,7 +19,7 @@ merge-tables  -- Merge tables from different results into one single spreadsheet
 # Parse the input for the different scripts
 parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqtable", help="Allele frequency table",
                     type=str)
-parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
+parser.add_argument("-l", "--coordinates", metavar='coordinates.txt', dest="listhla", help="List of HLA in algorithm", type=str)
 parser.add_argument("-p", "--population", dest="population", help="String Population (all pops)", type=str)
 parser.add_argument("-x", "--spreadsheet", dest="spreadsheet", help="Excel spreadsheet with data", type=str)
 parser.add_argument("-y", "--spreadsheet2", dest="spreadsheet2", help="Excel spreadsheet with data", type=str)
@@ -28,7 +28,7 @@ parser.add_argument("-t", "--task", dest="task", help="Task to perform", type=st
                                                                                             "filteredHLAs",
                                                                                             "merge-tables"])
 
-# Compile the list of flags for the script
+# Compile the coordinates of flags for the script
 args = parser.parse_args()
 
 
@@ -46,7 +46,7 @@ def all_hlas():
 
     mhc_predict_df = pd.read_table(args.listhla, header=None, sep='\t')
 
-    # Replace the empty spaces in the list
+    # Replace the empty spaces in the coordinates
     mhc_predict_df[1] = mhc_predict_df[1].apply(lambda x: str(x).replace(' ', ''))
 
     # Replace part of the strings to see if they match with the other lists
@@ -65,14 +65,14 @@ def all_hlas():
 
     allele = list(finaldf[1])
     length = list(finaldf[2])
-    # Print the list of alleles and lengths to copy into the command line for prediction tool
+    # Print the coordinates of alleles and lengths to copy into the command line for prediction tool
     print(','.join(allele), ','.join(map(str, length)))
 
     return finaldf
 
 
 def filtered_hla():
-    # Extract all the alleles that match the list using the previous function all_hlas()
+    # Extract all the alleles that match the coordinates using the previous function all_hlas()
     alleles_df = all_hlas()
     # Extract the alleles from the table containing previously studied alleles
     excel = pd.read_excel(args.spreadsheet, sheet_name='summarydata', index_col=0)
@@ -84,7 +84,7 @@ def filtered_hla():
     allele = list(filtered_df[1])
     length = list(filtered_df[2])
 
-    # Print the list of alleles that haven't been filtered for prediction tool
+    # Print the coordinates of alleles that haven't been filtered for prediction tool
     print(','.join(allele), ','.join(map(str, length)))
 
     return filtered_df

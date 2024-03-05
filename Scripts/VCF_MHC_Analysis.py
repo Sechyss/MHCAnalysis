@@ -55,7 +55,7 @@ def main():
     # Fetch region .  Note that the coordinates
     # in the API call are zero-based and describe half-open intervals.
     for record in vcf_reader.fetch('Pf3D7_03_v3', 221323, 222516):
-        # Extract the information from the record and add it to the list of features for this region
+        # Extract the information from the record and add it to the coordinates of features for this region
         if 'SNPEFF_GENE_NAME' in record.info.keys() and record.info['SNPEFF_GENE_NAME'] == 'CSP':
             if record.rlen == 1:
                 SNP_type = 'SNP'

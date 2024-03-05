@@ -13,7 +13,7 @@ columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatch
 
 #  Blastp result table related to human recognition only focusing those not similar to human peptides
 Blastp_human_recognition = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
-                                         'Otherproteins/BLASTP_results/Blastp_Human_Liverstage3_Nterminal.tsv', header=None)
+                                         'Otherproteins/BLASTP_results/Previous_run/Blastp_Human_Thrombos_Nterminal.tsv', header=None)
 Blastp_human_recognition.columns = columns
 
 # Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
@@ -25,7 +25,7 @@ HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file and filter it to include only rows with 'seq_num' in Highpercentage
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
-                          'IEDB_prediction/NCBI_Liverantigen3_Nterminal_IEDB.tsv', sep='\t', header=0)
+                          'IEDB_prediction/NCBI_Thrombos_Nterminal_IEDB.tsv', sep='\t', header=0)
 Table_mhc.dropna(how='all', inplace=True)
 Table_mhc = Table_mhc[Table_mhc['rank'] != 'rank']
 Table_mhc['seq_num'] = Table_mhc['seq_num'].astype(int)
@@ -49,7 +49,7 @@ for index, row in Table_mhc.iterrows():
 
 # Read blastp result table from a TSV file into a Pandas DataFrame
 Table_blastp_Pf3D7 = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
-                                   'BLASTP_results/Blastp_Human_Liverstage3_Nterminal.tsv', sep='\t', header=None)
+                                   'BLASTP_results/Blastp_Mapping_Thrombos_Nterminal.tsv', sep='\t', header=None)
 Table_blastp_Pf3D7.columns = columns  # Assign column names
 
 Table_blastp_Pf3D7['Absolute start'] = ''
@@ -68,7 +68,7 @@ Table_blastp_Pf3D7 = Table_blastp_Pf3D7.drop(['subject id', 'alignment length',
 
 # Read Netchop result table from a CSV file
 NetchopTable = pd.read_csv('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
-                           'Netchop_results/Netchop_Liverstage3.csv')
+                           'Netchop_results/Netchop_Thrombos.csv')
 
 # Create a dictionary to store Netchop data for each '#'
 netchop_dict = {}
@@ -79,7 +79,7 @@ for index, row in NetchopTable.iterrows():
 
 fastafile = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/Otherproteins/'
                         'Testing_repetitive_regions/'
-                        'Liverstageantigen3_Nterminal_kmer_filtered_corrected.fasta', 'fasta')
+                        'Thrombos_Nterminal_kmer_filtered.fasta', 'fasta')
 
 dictionary_sequences = {}
 
@@ -199,7 +199,7 @@ for country in tqdm(result_dict.keys()):
     average_similarity_hum_peptidome = []
 
     listHLAs = list(result_dict[country].values())
-    # listHLAs = list(result_dict[country])
+    # listHLAs = coordinates(result_dict[country])
     countryDF = Filtered_df[Filtered_df['Allele'].isin(listHLAs)].sort_values(by=['Absolute start'], ascending=True)
     startingkmer = final_df['Absolute start'].min()
     endingkmer = startingkmer + 11

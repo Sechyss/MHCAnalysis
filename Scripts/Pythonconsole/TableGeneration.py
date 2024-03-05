@@ -12,11 +12,11 @@ import pickle
 def extract_table_from_html(url):  # Function to extract table from html address
     html = requests.get(url).content
     df_list = pd.read_html(html)
-    df = df_list[-1]  # the last table in the list is usually the one we want
+    df = df_list[-1]  # the last table in the coordinates is usually the one we want
     df.drop(['Line', '% of individuals that have the allele'], axis=1, inplace=True)
     return df
 
-# Creation of the list of populations and their url to download. Important to check the order of the lists
+# Creation of the coordinates of populations and their url to download. Important to check the order of the lists
 list_populations = ['Papua New Guinea Karimui Plateau Pawaia',
                     'Papua New Guinea Madang',
                     'New Caledonia',
@@ -182,7 +182,7 @@ plt.tight_layout()
 plt.savefig('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/Allele_sharing_heatmap.pdf', dpi=300)
 plt.show()
 
-#%% Print the table and list of alleles and their lenghths
+#%% Print the table and coordinates of alleles and their lenghths
 new_data = pd.read_excel('/Users/u2176312/OneDrive - University of Warwick/CSP/AllelePops/FilteredDataAllele.xlsx',
                          sheet_name='FilteredAlleles', index_col=0)
 
@@ -209,7 +209,7 @@ lengths = [x[1] for x in combinations]
 #print(','.join(alleles), ','.join(map(str, lengths)))
 
 
-# %% Sanity Checks fpr the full list vs successful ones
+# %% Sanity Checks fpr the full coordinates vs successful ones
 
 listsucdess_all = pd.read_excel('/Users/u2176312/OneDrive - University of '
                           'Warwick/CSP/AllelePops/All_HLAs_Kmer_CSP_region_273-375_summarydata_length_all.xlsx',

@@ -33,6 +33,7 @@ def main():
     columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatches', 'gap opens',
                'q. start', 'q. end', 's. start', 's. end', 'evalue', 'bit score']
 
+    #%%  Upload of the different datasets that will be used later in the code
     #  Blastp result table related to human recognition only focusing those not similar to human peptides
     Blastp_human_recognition = pd.read_table(args.blastpH, header=None)
     Blastp_human_recognition.columns = columns
@@ -98,6 +99,8 @@ def main():
         peptide_sequence = seq_record.seq
         dictionary_sequences.update({sequence_id: peptide_sequence})
 
+    #%% Creation of the first database using the previous tables
+
     collectordf = pd.DataFrame(columns=['Sequence', 'Allele', 'Starting aa', 'Ending aa', 'Epitope', 'C-terminal aa'])
 
     print('Analyzing the sequences in the dictionary mhc data')
@@ -141,8 +144,8 @@ def main():
             else:
                 final_df.at[index, 'C-terminal match'] = 0
         else:
-            final_df.at[index, 'C-terminal match'] = 'No MHC recognition'
-            final_df.at[index, 'Netchop prediction scores'] = 'No MHC recognition'
+            final_df.at[index, 'C-terminal match'] = 'No test for match'
+            final_df.at[index, 'Netchop prediction scores'] = 'No Netchop score'
 
         if row['Sequence'] in HumanKmers:
             final_df.at[index, 'Human peptide recognition'] = 1

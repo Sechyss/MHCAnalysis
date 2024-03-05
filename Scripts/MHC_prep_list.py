@@ -15,7 +15,7 @@ the SNPs in fasta file.
 
 parser.add_argument("-f", "--freqtable", metavar='table.xlsx', dest="allelefreqtable", help="Allele frequency table",
                     type=str)
-parser.add_argument("-l", "--list", metavar='list.txt', dest="listhla", help="List of HLA in algorithm", type=str)
+parser.add_argument("-l", "--coordinates", metavar='coordinates.txt', dest="listhla", help="List of HLA in algorithm", type=str)
 parser.add_argument("-p", "--population", dest="population", help="String Population (all pops)", type=str)
 
 
@@ -30,7 +30,7 @@ list_alleles = set(relative_allefreq['Allele'])
 
 mhc_predict_df = pd.read_table(args.listhla, header=None, sep='\t')
 
-# Replace the empty spaces in the list
+# Replace the empty spaces in the coordinates
 mhc_predict_df[1] = mhc_predict_df[1].apply(lambda x: str(x).replace(' ', ''))
 
 # Replace part of the strings to see if they match with the other lists

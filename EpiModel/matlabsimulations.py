@@ -110,7 +110,7 @@ def stacked_plot_results_haplotable():
     df_to_plot = pd.DataFrame.from_dict(temp, orient='index', columns=['Sim<5000y', 'Sim>5000y',
                                                                        'Sim>10000y', 'Sim>15000y'])
 
-    # Make a list by cycling through the colors you care about
+    # Make a coordinates by cycling through the colors you care about
     # to match the length of your data.
     colors_bar = ['#1E555C', '#E28413', '#000022', '#DE3C4B']
     df_to_plot.plot(kind='bar', stacked=True, mark_right=False, color=colors_bar)

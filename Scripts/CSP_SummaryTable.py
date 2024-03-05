@@ -39,7 +39,7 @@ mhc_run_dict = pickle.load(temp_file)
 mhc_run_successful = mhc_run[mhc_run['rank'] <= 1]
 mhc_run_successful = mhc_run_successful.sort_values(by=['allele'])
 
-# Extract the list of alleles
+# Extract the coordinates of alleles
 successful_alleles = list(set(mhc_run_successful['allele']))
 successful_alleles.sort()
 
@@ -93,7 +93,7 @@ for key1 in dict_ids.keys():
         else:
             continue
 
-# Creation of dictionary to save the list of alleles and the sequence ids they bound to
+# Creation of dictionary to save the coordinates of alleles and the sequence ids they bound to
 dict_tosave = {}
 for allele in successful_alleles:
     filtered_df = mhc_run_successful[mhc_run_successful['allele'] == allele]

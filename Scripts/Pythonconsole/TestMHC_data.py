@@ -9,7 +9,7 @@ list_alleles = set(relative_allefreq['Allele'])
 mhc_predict_df = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/CSP/ListHLA_netmhcpan_el.txt',
                                header=None, sep='\t')
 
-# Replace the empty spaces in the list
+# Replace the empty spaces in the coordinates
 mhc_predict_df[1] = mhc_predict_df[1].apply(lambda x: str(x).replace(' ', ''))
 
 # Replace part of the strings to see if they match with the other lists
