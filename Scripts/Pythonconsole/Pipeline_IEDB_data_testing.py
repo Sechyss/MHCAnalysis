@@ -1,10 +1,6 @@
 # /usr/bin/env python3
-import argparse
-import textwrap
-import warnings
 import pickle
 
-import os
 import pandas as pd
 from tqdm import tqdm
 from Bio import SeqIO
@@ -16,7 +12,7 @@ columns = ['query id', 'subject id', '% identity', 'alignment length', 'mismatch
 # %%  Upload of the different datasets that will be used later in the code
 #  Blastp result table related to human recognition only focusing those not similar to human peptides
 Blastp_human_recognition = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
-                                         'Otherproteins/BLASTP_results/Blastp_Human_Liverstage3_full.tsv', header=None)
+                                         'Otherproteins/BLASTP_results/Blastp_Human_CSP_Nterminal.tsv', header=None)
 Blastp_human_recognition.columns = columns
 
 # Modify the 'subject id' column by removing 'Sequence_' and adding 1 to the values
@@ -28,7 +24,7 @@ HumanKmers = list(set(Blastp_human_recognition['subject id']))
 
 # Read a table of MHC data from a TSV file
 Table_mhc = pd.read_table('/Users/u2176312/OneDrive - University of Warwick/'
-                          'Otherproteins/IEDB_prediction/NCBI_Liverantigen3_full_IEDB.tsv', sep='\t')
+                          'Otherproteins/IEDB_prediction/NCBI_CSP_Nterminal_IEDB.tsv', sep='\t')
 Table_mhc.dropna(how='all', inplace=True)
 Table_mhc['seq_num'] = Table_mhc['seq_num'].astype(int)
 
@@ -47,7 +43,8 @@ for index, row in Table_mhc.iterrows():
 # Creation of sequence dictionary
 
 fastafile = SeqIO.parse('/Users/u2176312/OneDrive - University of Warwick/'
-                        'Otherproteins/Multiple_Alignment/Liverstageantigen3_kmer_filtered_corrected.fasta', 'fasta')
+                        'Otherproteins/Multiple_Alignment/CSPNterminal_kmer_filtered_corrected.fasta',
+                        'fasta')
 
 dictionary_sequences = {}
 
@@ -56,8 +53,11 @@ for seq_record in fastafile:
     peptide_sequence = seq_record.seq
     dictionary_sequences.update({sequence_id: peptide_sequence})
 
+dictionary_depth = pickle.load(open('/Users/u2176312/OneDrive - University of Warwick/'
+                               'Otherproteins/Multiple_Alignment/CSPNterminal_Kmer_depth.pickle', 'rb'))
+
 dictionary_locations = pickle.load(open('/Users/u2176312/OneDrive - University of Warwick/'
-                                        'Otherproteins/Multiple_Alignment/Liverstageantigen3.pickle', 'rb'))
+                                        'Otherproteins/Multiple_Alignment/CSPNterminal.pickle', 'rb'))
 Table_blastp_Pf3D7 = pd.DataFrame(columns=['Seq_id', 'Absolute start', 'Absolute end'
     , 'Peptide of 11kmer-aa'])
 counter_1 = 1
@@ -207,6 +207,7 @@ for country in tqdm(result_dict.keys()):
     new_df2.index = x_axis
 
     new_df2['Total variations'] = number_variations
+    new_df2['Coverage depth'] = list(dictionary_depth.values())
     new_df2['Kmer min% human peptidome'] = min_similarity_hum_peptidome
     new_df2['Kmer average% human peptidome'] = average_similarity_hum_peptidome
     new_df2['Kmer max% human peptidome'] = max_similarity_hum_peptidome

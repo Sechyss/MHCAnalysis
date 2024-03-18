@@ -64,12 +64,12 @@ def main():
     writer.close()
 
     # Ensure the date column is a proper DateTime format before plotting
-    new_Japan_df = table_Japan.div(table_Japan.sum(axis=1), axis=0)
+    new_Japan_df = table_Japan_2
     new_Japan_df.reset_index(inplace=True)
     new_Japan_df['index'] = pd.to_datetime(new_Japan_df['index'])  # Assuming 'index' is the date column
     new_Japan_df.rename(columns={'index': 'Date'}, inplace=True)
 
-    new_UK_df = table_UK.div(table_UK.sum(axis=1), axis=0)
+    new_UK_df = table_UK_2
     new_UK_df.reset_index(inplace=True)
     new_UK_df['index'] = pd.to_datetime(new_UK_df['index'])
     new_UK_df.rename(columns={'index': 'Date'}, inplace=True)

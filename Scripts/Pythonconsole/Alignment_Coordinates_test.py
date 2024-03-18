@@ -42,7 +42,7 @@ for position in range(len(df.columns)):
         ending_pos = df.columns[position + 10]
         filtered_df = df[df.columns[position: position + 10]]
         count_rows_with_hyphen = filtered_df.eq('-').any(axis=1).sum()
-        depth = (len(df.index) - count_rows_with_hyphen) / len(df.index)
+        depth = len(df.index) - count_rows_with_hyphen
         Gene_depth.update({starting_pos: depth})
 
 Sequences_dictionary = {}

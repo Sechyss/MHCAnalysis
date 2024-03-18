@@ -13,16 +13,17 @@ from Bio import SeqIO
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=textwrap.dedent('''\
-    Workflow combining the data from BLASTP and the results obtained by IEDB and Netchop.
+    Workflow combining the data from location and the results obtained by IEDB.
     ------------------------------------------
     '''))
 
     parser.add_argument("-b", "--blastpH", metavar='file.tsv', dest="blastpH", help="Blastphuman Table", type=str)
     parser.add_argument("-m", "--mhcpred", metavar='file.tsv', dest="mhcpred", help="MHC prediction Table", type=str)
     parser.add_argument("-r", "--dictRef", metavar='file.pickle', dest="DictRef", help="Dictionary Ref", type=str)
+    parser.add_argument("-d", "--dictDepth", metavar='file.pickle', dest="DictDepth", help="Dictionary Depth", type=str)
     parser.add_argument("-s", "--sequences", dest="fastafile", help="Fasta Kmer sequence", type=str)
     parser.add_argument("-o", "--output", dest="output", help="Output folder", type=str)
-    parser.add_argument("-d", "--dictionary", dest="dictionary", help="Table of HLAs - Dictionary", type=str)
+    parser.add_argument("-t", "--dictionary", dest="dictionary", help="Table of HLAs - Dictionary", type=str)
 
     args = parser.parse_args()
 
@@ -72,6 +73,7 @@ def main():
         dictionary_sequences.update({sequence_id: peptide_sequence})
 
     dictionary_locations = pickle.load(open(args.DictRef, 'rb'))
+    dictionary_depth = pickle.load(open(args.DictDepth, 'rb'))
     Table_blastp_Pf3D7 = pd.DataFrame(columns=['Seq_id', 'Absolute start', 'Absolute end'
         , 'Peptide of 11kmer-aa'])
     counter_1 = 1
@@ -223,6 +225,7 @@ def main():
         new_df2.index = x_axis
 
         new_df2['Total variations'] = number_variations
+        new_df2['Depth Kmer'] = list(dictionary_depth.values())
         new_df2['Kmer min% human peptidome'] = min_similarity_hum_peptidome
         new_df2['Kmer average% human peptidome'] = average_similarity_hum_peptidome
         new_df2['Kmer max% human peptidome'] = max_similarity_hum_peptidome
